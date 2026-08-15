@@ -1,7 +1,7 @@
 From 8760a2a4a93956f083be2b4bd41904603bbb5afb Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Sat, 15 Aug 2026 21:20:40 +0000
-Subject: [PATCH 4/5] Remove the recurring variations and network-time
+Subject: [PATCH 4/6] Remove the recurring variations and network-time
  callbacks to Google
 
 Two periodic requests remained in the build regardless of user activity.

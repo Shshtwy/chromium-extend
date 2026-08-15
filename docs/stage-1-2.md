@@ -680,6 +680,56 @@ Four items, each with a precise diagnosis, in addition to the network patches al
    `adb shell pm set-app-links --package <pkg> 0 all`, or Settings → Apps → *app* →
    Open by default → disable "Open supported links". There is no global Android toggle.
 
+### Already neutralized upstream — do not re-investigate
+
+Verified 2026-08-15. Several targets originally listed for Stage 3 need no work, because a
+public (non-Chrome-branded, non-official) Chromium build already has them disabled. Recorded
+here so they are not rediscovered later.
+
+| Target | Why it is already dead |
+| --- | --- |
+| UMA metrics upload | All URLs in `components/metrics/server_urls.grd` are `-` placeholders |
+| UKM (URL-keyed metrics) | Same mechanism, `IDS_UKM_SERVER_URL` |
+| DWA / Cast / private metrics | Same mechanism |
+| Crash upload | `CrashReporterClient::GetUploadUrl()` returns `std::string()` |
+| Navigation error correction ("link doctor") | No endpoint present in this tree |
+
+**Metrics.** `components/metrics/server_urls.cc` reads every endpoint from a GRIT resource, and
+the public `server_urls.grd` carries a `-` placeholder for each, which `GetUrl()` converts to an
+empty `GURL()`. The file states the intent directly: the real URLs live in an internal grd
+"to prevent Chromium forks from accidentally sending metrics to Google servers."
+
+**Crash upload.** `components/crash/core/app/crash_reporter_client.cc:148`:
+
+```cpp
+std::string CrashReporterClient::GetUploadUrl() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && defined(OFFICIAL_BUILD)
+  return kDefaultUploadURL;   // https://clients2.google.com/cr/report
+#else
+  return std::string();
+#endif
+}
+```
+
+This build satisfies neither condition, so the upload URL is empty and `kDefaultUploadURL` is
+not even compiled in.
+
+This is the same class of finding as the missing Google API keys recorded in `docs/design.md`:
+the build is substantially more de-Googled out of the box than a generic de-Googling guide
+would suggest. Confirm before patching.
+
+### Still live after the above
+
+| Target | Endpoint | Location |
+| --- | --- | --- |
+| Autofill crowdsourcing | `content-autofill.googleapis.com` | `autofill_crowdsourcing_manager.cc:127` |
+| Translate | `translate.googleapis.com`, plus a ranker model URL | `translate_ranker_impl.cc:83`, `:87`, `:91` |
+| Component updater | Google update service | Deliberately retained for CRLSets |
+
+Autofill crowdsourcing uploads the structure of encountered forms (field names and types).
+Local autofill is unaffected by its removal. The translate ranker has three conditional URL
+definitions, so it needs reading before patching rather than a single-line change.
+
 ### Also observed for Stage 5 (UI removal)
 
 Beyond the Settings entries already scoped, the New Tab Page still carries Google branding, an
