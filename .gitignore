@@ -1,0 +1,28 @@
+# Build artifacts — APKs run ~465 MB each, far past GitHub's 100 MB file limit.
+*.apk
+*.apk.idsig
+*.aab
+
+# Host/container exchange directory. The compose file bind-mounts this, so the
+# directory must exist on a fresh clone, but nothing inside it is source.
+exchange/*
+!exchange/.gitkeep
+
+# Working copies and pristine originals of patched files. patches/ is the
+# authoritative record; keeping a second copy here only invites drift.
+local-src/
+
+# Superseded by the patch series and kept locally for reference only.
+phase2-staging/
+account-probe/
+
+# Local test notes containing device specifics.
+crash-report-*.md
+
+# Build logs and extracted manifests.
+*.log
+*-manifest.txt
+args.gn.*
+
+# macOS
+.DS_Store

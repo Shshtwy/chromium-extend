@@ -1,0 +1,17 @@
+services:
+  chromium-builder:
+    platform: linux/amd64
+    build:
+      context: ./docker
+    image: chromium-android-builder:local
+    container_name: chromium-android-builder
+    stdin_open: true
+    tty: true
+    shm_size: 2gb
+    volumes:
+      - chromium-source:/work
+      - ./exchange:/exchange
+
+volumes:
+  chromium-source:
+    name: chromium-android-source
