@@ -1,6 +1,4 @@
-<img src="assets/chromium-logo.svg" width="88" align="right" alt="">
-
-# Chromium Extend
+# Chromium Extend <img src="assets/chromium-logo.svg" width="52" align="right" alt="">
 
 A small patch series for **Chromium Desktop Android** that removes Google tracking,
 telemetry, and AI integration while keeping browser extensions and video playback working.
