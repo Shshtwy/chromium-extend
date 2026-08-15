@@ -730,6 +730,23 @@ Autofill crowdsourcing uploads the structure of encountered forms (field names a
 Local autofill is unaffected by its removal. The translate ranker has three conditional URL
 definitions, so it needs reading before patching rather than a single-line change.
 
+### First-run experience — priority item for Stage 5
+
+On a fresh profile the browser opens a full-screen first-run page: "Make Chrome your own",
+"Sign in to get your bookmarks, passwords, and more on all your devices", with **Add account to
+device** as the primary action and *Stay signed out* as the secondary.
+
+Two reasons to remove it, the second stronger than the first:
+
+1. It is a Google sign-in promotion, and sign-in does not function in this build (no API keys).
+2. Its footer states: *"To help improve the app, Chrome sends usage and crash data to Google."*
+   **That is false here.** Metrics endpoints are empty placeholders and
+   `CrashReporterClient::GetUploadUrl()` returns an empty string, as recorded above. The screen
+   asks the user to accept a data-sharing statement describing behaviour the binary does not have.
+
+A build that claims to send data it cannot send is worse than one that simply says nothing, so
+this ranks above the Settings and New Tab Page surfaces in Stage 5.
+
 ### Also observed for Stage 5 (UI removal)
 
 Beyond the Settings entries already scoped, the New Tab Page still carries Google branding, an
