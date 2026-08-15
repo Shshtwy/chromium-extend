@@ -1,3 +1,5 @@
+<img src="assets/chromium-logo.svg" width="88" align="right" alt="">
+
 # Chromium Extend
 
 A small patch series for **Chromium Desktop Android** that removes Google tracking,
@@ -7,7 +9,29 @@ Built and used on a Pixel 10 Pro XL. Not affiliated with Google or the Chromium 
 
 - **Base:** Chromium `153.0.7999.0` (commit `945b5115`)
 - **Target:** `is_desktop_android = true`, `target_cpu = "arm64"`
-- **Size:** 5 patches, 155 insertions and 24 deletions across 12 files
+- **Size:** 6 patches, ~190 insertions across 13 files
+
+## What you get
+
+**🧩 Real browser extensions on your phone.** Password managers, ad blockers, dark mode — the same
+extensions you'd use on a desktop. Tap an extension's icon and its window opens properly, and you
+can pin the ones you use most to the toolbar.
+
+**🔗 Links open in the browser, not in apps.** Tapping a Reddit or YouTube result keeps you in the
+browser instead of throwing you into their app mid-read. Phone numbers and email links still open
+the right app, as they should.
+
+**📵 De-Googled!** No background check-ins to Google, and nothing about the forms you fill in gets
+sent off for analysis. Google's built-in AI features are removed entirely, not just switched off.
+
+**🎬 Video still works.** Ordinary video plays, and so does paid streaming like Netflix and Spotify —
+usually the first thing to break in a privacy-focused browser.
+
+**🛡️ Still safe to browse.** Protections against fake certificates and downgraded connections are
+deliberately kept. Privacy here doesn't come at the cost of security.
+
+**🐛 Two crashes fixed.** The stock build crashes when you open an extension's window, and again if
+you tap sign-in. Both are fixed.
 
 ## Why
 
@@ -25,9 +49,10 @@ without forking anything.
 | 0003 | Extensions toolbar on phone layouts | Extension icons, popups, and pinning were tablet-only; now available at phone widths |
 | 0004 | Remove variations and network-time callbacks | Two periodic requests to Google, sent regardless of activity |
 | 0005 | Keep web navigations in the browser | `http(s)` links no longer get handed to whichever app claims the domain |
+| 0006 | Stop Autofill crowdsourcing uploads | Form structure was uploaded to Google to train its field-classification heuristics |
 
 Patches 0001 and 0002 are bug fixes that happen to be prerequisites. 0003 is a usability fix.
-0004 and 0005 are the de-Googling.
+0004 through 0006 are the de-Googling.
 
 ### Removed by build flag
 
@@ -93,9 +118,11 @@ container and the host.
 works. Both original crash reproductions are gone. The shipped `AndroidManifest.xml` contains
 zero references to ML Kit or AICore.
 
-**Not yet verified.** Patch 0005 has not been confirmed against a real in-page link tap —
-testing so far used an explicit-component intent, which partly bypasses that code path.
-Widevine playback has not been tested since the changes.
+Patch 0005 is confirmed against a real in-page link tap: following a Reddit result from a search
+page keeps you in the browser, with Reddit's own "Open App" prompt left unused.
+
+**Not fully verified.** Widevine is *detected* — a DRM test page reports `widevine` as the
+available key system — but actual protected playback has not been exercised end to end.
 
 ## Known limitations
 
@@ -117,13 +144,20 @@ Widevine playback has not been tested since the changes.
 
 Each has an exact file and line reference in [docs/stage-1-2.md](docs/stage-1-2.md):
 
-- UMA/UKM and crash upload — the two remaining recurring callbacks
 - Safe Browsing — blocked by one un-gated call site in the Android JNI bridge
 - Google XR SDKs (ARCore, Cardboard, VrCore, OpenXR) — blocked by three omnibox call sites;
   the flags are coupled in both directions and there is no GN-only configuration that works
 - `build_with_model_execution`, `enable_supervised_users`, `enable_offline_pages` — each
   blocked by a single GN `assert()`
 - Sign-in, Sync, and New Tab Page Google surfaces still appear in the UI
+- Android manifest entries for Firebase, GCM, Play Core, Cast and Google Backup
+
+### Already inert — no work needed
+
+Worth knowing before anyone patches them: a public (non-Chrome-branded) Chromium build already
+sends no usage metrics, no URL-keyed metrics and no crash reports, because upstream withholds
+those endpoints from forks. Translate is likewise disabled without a Google API key. Details and
+evidence are in [docs/stage-1-2.md](docs/stage-1-2.md).
 
 ## Repository layout
 
@@ -132,6 +166,7 @@ patches/            the patch series, applied in order
 docker/             container image definition
 docker-compose.yml  build environment
 builder.sh          container wrapper
+assets/             logo used in this README
 docs/design.md      design decisions and rationale
 docs/stage-1-2.md   execution notes, diagnoses, and results
 ```
@@ -144,5 +179,11 @@ and would be far past GitHub's file size limits.
 The patches modify Chromium source and are therefore subject to Chromium's
 **BSD-3-Clause** license. See the
 [Chromium LICENSE](https://chromium.googlesource.com/chromium/src/+/main/LICENSE).
+
+`assets/chromium-logo.svg` is from
+[Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Chromium_Logo.svg), in the public
+domain under `PD-textlogo` (simple geometric shapes, below the threshold of originality).
+Public domain covers copyright only — the mark itself remains a trademark, and it is used here
+to identify the upstream project this patches, not to suggest endorsement.
 
 Chromium is a trademark of Google LLC. This project is unaffiliated.
