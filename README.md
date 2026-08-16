@@ -7,7 +7,7 @@ Built and used on a Pixel 10 Pro XL. Not affiliated with Google or the Chromium 
 
 - **Base:** Chromium `153.0.7999.0` (commit `945b5115`)
 - **Target:** `is_desktop_android = true`, `target_cpu = "arm64"`
-- **Size:** 21 patches, 393 insertions across 29 files
+- **Size:** 23 patches, 544 insertions across 37 files
 
 ## What you get
 
@@ -81,10 +81,13 @@ without forking anything.
 | 0019 | Remove the Ask Gemini button | The bottom bar's extra slot resolved to Gemini, which demands account verification |
 | 0020 | Remove the avatar sign-in button | "Signed out. Opens options to sign in." on every new tab page |
 | 0021 | Stop offering Gemini as a toolbar shortcut | Otherwise the button removed in 0019 could be put back from Settings |
+| 0022 | Offer downloads to an installed download manager | Hands a download to an app such as 1DM instead of fetching it in the browser |
+| 0023 | Add a setting to choose the download manager | Settings → Downloads, off by default |
 
 Patches 0001 and 0002 are bug fixes that happen to be prerequisites. 0003 is a usability fix.
 0004 through 0010 are the de-Googling, as are 0014 through 0021. 0011 through 0013 fix
-fullscreen video behaviour.
+fullscreen video behaviour. 0022 and 0023 add the external download manager option — the only
+patches here that add a feature rather than remove or fix one.
 
 Sign-in has no single gate in Chromium. Patches 0009, 0010, 0015, 0016 and 0020 each remove a
 different entry point — the settings row, the "You and Google" section, the first-run screen,
@@ -188,6 +191,10 @@ available key system — but actual protected playback has not been exercised en
   change it in Settings → Search engine.
 - **The New Tab Page still has an AI Mode button and Discover.** Its Google logo and the promo
   cards are gone, but these two remain.
+- **External downloads lose your sign-in.** With "Use an external download manager" on, a file
+  that requires you to be signed in will fail in the other app: the interception point in
+  `ChromeDownloadManagerDelegate` carries no cookie. Passing credentials needs a different
+  interception layer, not an extra argument. The setting's own summary says so.
 - **Passkeys (WebAuthn) do not work.** `Fido.FIDO2_PRIVILEGED_API` is restricted to
   Google-signed browsers, so a self-built Chromium is refused with `ApiException: 17`. This is
   inherent to building Chromium yourself, not caused by any patch here — verified by
