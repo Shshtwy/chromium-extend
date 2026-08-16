@@ -1,0 +1,52 @@
+From fc1b028e32e27fb726e4448d90c531693c610f1f Mon Sep 17 00:00:00 2001
+From: Chromium Extend <noreply@localhost>
+Date: Sun, 16 Aug 2026 08:19:46 +0000
+Subject: [PATCH 19/20] Remove the Ask Gemini button from the bottom bar
+
+The bottom bar keeps a shared extra slot whose occupant is resolved by
+getEligibleExtraAction. Both candidates are Google surfaces: GLIC is the Ask
+Gemini button, which opens a sheet demanding Google account verification and can
+do nothing in this build, and AI_MODE is the AI Mode fallback.
+
+AI_MODE is already unreachable because it requires the default search engine to
+be Google and this build ships DuckDuckGo, but it is covered here as well so
+that switching the search engine back in settings does not quietly bring an AI
+button along with it.
+
+This is also why setting enable_glic_internal_resources = false did not remove
+the button: the view is a generic extra_button stub, not a Gemini-specific
+widget, so the flag stripped resources while the slot kept being filled.
+---
+ .../ui/bottombar/BottomBarActionEligibility.java  | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+diff --git a/chrome/browser/ui/android/bottombar/java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarActionEligibility.java b/chrome/browser/ui/android/bottombar/java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarActionEligibility.java
+index d5aed1fe48..eab9a20cc1 100644
+--- a/chrome/browser/ui/android/bottombar/java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarActionEligibility.java
++++ b/chrome/browser/ui/android/bottombar/java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarActionEligibility.java
+@@ -49,7 +49,22 @@ public class BottomBarActionEligibility {
+      * @return The eligible {@link ActionId} (either {@link ActionId#GLIC} or {@link
+      *     ActionId#AI_MODE}), or {@link #ACTION_NONE} if no action is eligible.
+      */
++    /**
++     * De-Googled build: the bottom bar extra slot stays empty.
++     *
++     * <p>Both actions it can resolve to are Google surfaces. GLIC is the Ask Gemini button, which
++     * opens a sheet demanding Google account verification and can do nothing here. AI_MODE is
++     * already unreachable because it requires the default search engine to be Google and this
++     * build ships DuckDuckGo, but it is covered too, so that switching the search engine back
++     * does not quietly bring an AI button along with it.
++     */
++    private static final boolean SHOW_BOTTOM_BAR_EXTRA_ACTION = false;
++
+     /* package-private */ static int getEligibleExtraAction(@Nullable Profile profile) {
++        if (!SHOW_BOTTOM_BAR_EXTRA_ACTION) {
++            return ACTION_NONE;
++        }
++
+         if (profile == null) {
+             return ACTION_NONE;
+         }
+-- 
+2.34.1
+

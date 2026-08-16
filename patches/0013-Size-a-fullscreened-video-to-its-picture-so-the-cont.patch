@@ -1,7 +1,7 @@
 From 87123701a1e0cc6a8d44aced08b48f72599f0ac4 Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Sun, 16 Aug 2026 05:31:51 +0000
-Subject: [PATCH 13/18] Size a fullscreened video to its picture so the
+Subject: [PATCH 13/20] Size a fullscreened video to its picture so the
  controls sit on it
 
 The generic :fullscreen rule stretches the fullscreen element edge to edge and

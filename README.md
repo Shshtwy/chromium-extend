@@ -7,7 +7,7 @@ Built and used on a Pixel 10 Pro XL. Not affiliated with Google or the Chromium 
 
 - **Base:** Chromium `153.0.7999.0` (commit `945b5115`)
 - **Target:** `is_desktop_android = true`, `target_cpu = "arm64"`
-- **Size:** 18 patches, 356 insertions across 26 files
+- **Size:** 20 patches, 383 insertions across 28 files
 
 ## What you get
 
@@ -78,10 +78,16 @@ without forking anything.
 | 0016 | Stop showing the NTP sign-in card | "Get better content" — sign in to personalise a feed this build cannot use |
 | 0017 | Remove the Chrome tips module | A carousel of Google promos: history sync, sign-in, passwords, Safe Browsing |
 | 0018 | Never offer the web app restore promo | Restores apps from devices "connected to this account" — impossible here |
+| 0019 | Remove the Ask Gemini button | The bottom bar's extra slot resolved to Gemini, which demands account verification |
+| 0020 | Remove the avatar sign-in button | "Signed out. Opens options to sign in." on every new tab page |
 
 Patches 0001 and 0002 are bug fixes that happen to be prerequisites. 0003 is a usability fix.
-0004 through 0010 are the de-Googling, as are 0014 through 0018. 0011 through 0013 fix
+0004 through 0010 are the de-Googling, as are 0014 through 0020. 0011 through 0013 fix
 fullscreen video behaviour.
+
+Sign-in has no single gate in Chromium. Patches 0009, 0010, 0015, 0016 and 0020 each remove a
+different entry point — the settings row, the "You and Google" section, the first-run screen,
+the New Tab Page card, and the toolbar avatar. Assume there are more rather than fewer.
 
 ### Removed by build flag
 
@@ -179,8 +185,8 @@ available key system — but actual protected playback has not been exercised en
   first run. An existing profile has `kDefaultSearchProviderData` persisted and
   `DefaultSearchManager` prefers it, so upgrading over an older install keeps Google until you
   change it in Settings → Search engine.
-- **The Gemini button is still in the bottom toolbar.** The sparkle opens a Gemini sheet that
-  asks you to verify a Google account, so it cannot do anything in this build. Not yet removed.
+- **The New Tab Page still has an AI Mode button and Discover.** Its Google logo and the promo
+  cards are gone, but these two remain.
 - **Passkeys (WebAuthn) do not work.** `Fido.FIDO2_PRIVILEGED_API` is restricted to
   Google-signed browsers, so a self-built Chromium is refused with `ApiException: 17`. This is
   inherent to building Chromium yourself, not caused by any patch here — verified by
