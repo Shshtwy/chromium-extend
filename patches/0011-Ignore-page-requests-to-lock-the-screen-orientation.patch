@@ -1,7 +1,7 @@
 From c573bf4f22345c787bfa822208d51f3b24cdd852 Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Sun, 16 Aug 2026 04:43:40 +0000
-Subject: [PATCH 11/20] Ignore page requests to lock the screen orientation
+Subject: [PATCH 11/21] Ignore page requests to lock the screen orientation
 
 Sites commonly call screen.orientation.lock("landscape") when entering
 fullscreen video. Honouring that calls Activity.setRequestedOrientation(),

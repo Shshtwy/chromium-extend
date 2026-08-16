@@ -7,7 +7,7 @@ Built and used on a Pixel 10 Pro XL. Not affiliated with Google or the Chromium 
 
 - **Base:** Chromium `153.0.7999.0` (commit `945b5115`)
 - **Target:** `is_desktop_android = true`, `target_cpu = "arm64"`
-- **Size:** 20 patches, 383 insertions across 28 files
+- **Size:** 21 patches, 393 insertions across 29 files
 
 ## What you get
 
@@ -80,9 +80,10 @@ without forking anything.
 | 0018 | Never offer the web app restore promo | Restores apps from devices "connected to this account" — impossible here |
 | 0019 | Remove the Ask Gemini button | The bottom bar's extra slot resolved to Gemini, which demands account verification |
 | 0020 | Remove the avatar sign-in button | "Signed out. Opens options to sign in." on every new tab page |
+| 0021 | Stop offering Gemini as a toolbar shortcut | Otherwise the button removed in 0019 could be put back from Settings |
 
 Patches 0001 and 0002 are bug fixes that happen to be prerequisites. 0003 is a usability fix.
-0004 through 0010 are the de-Googling, as are 0014 through 0020. 0011 through 0013 fix
+0004 through 0010 are the de-Googling, as are 0014 through 0021. 0011 through 0013 fix
 fullscreen video behaviour.
 
 Sign-in has no single gate in Chromium. Patches 0009, 0010, 0015, 0016 and 0020 each remove a

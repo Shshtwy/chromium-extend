@@ -1,7 +1,7 @@
 From 949e1039beecef26bb94b737b019b21b60116fe3 Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Sat, 15 Aug 2026 21:58:18 +0000
-Subject: [PATCH 06/20] Stop uploading form structure to the Autofill
+Subject: [PATCH 06/21] Stop uploading form structure to the Autofill
  crowdsourcing server
 
 Autofill uploads the structure of forms it encounters - field signatures, types, and page signatures - to content-autofill.googleapis.com, where it feeds Google field-classification heuristics. Local autofill does not depend on it.
