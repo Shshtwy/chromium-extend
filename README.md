@@ -7,7 +7,7 @@ Built and used on a Pixel 10 Pro XL. Not affiliated with Google or the Chromium 
 
 - **Base:** Chromium `153.0.7999.0` (commit `945b5115`)
 - **Target:** `is_desktop_android = true`, `target_cpu = "arm64"`
-- **Size:** 12 patches, 251 insertions across 20 files
+- **Size:** 15 patches, 330 insertions across 23 files
 
 ## What you get
 
@@ -22,8 +22,12 @@ the right app, as they should.
 **📵 De-Googled!** No background check-ins to Google, and nothing about the forms you fill in gets
 sent off for analysis. Google's built-in AI features are removed entirely, not just switched off.
 
+**🦆 DuckDuckGo out of the box.** The shipped default on a new profile, not something you have to
+go and change. The new tab page follows it, so the Google logo is gone too.
+
 **🧹 No dead Google UI.** Settings opens straight to what you can actually change — no sign-in
-prompts, no Google services page, no password manager row that only says it stopped working.
+prompts, no Google services page, no password manager row that only says it stopped working. No
+first-run sign-in screen either: it opens straight to a new tab.
 
 **🎬 Video still works, and fullscreen behaves.** Ordinary video plays, and so does paid streaming
 like Netflix and Spotify — usually the first thing to break in a privacy-focused browser. Fullscreen
@@ -68,9 +72,13 @@ without forking anything.
 | 0010 | Remove the "You and Google" settings section | Sign-in and Google services entries, neither of which can work here |
 | 0011 | Ignore page requests to lock screen orientation | Fullscreen video forced landscape, overriding the system rotation lock |
 | 0012 | Draw fullscreen content into the display cutout | Fullscreen video was letterboxed off the camera edge, leaving it off-centre |
+| 0013 | Size fullscreen video to its picture | The seekbar sat at the bottom of the screen instead of on the video |
+| 0014 | DuckDuckGo as the default search provider | Google was the shipped default, selected by engine ID rather than list order |
+| 0015 | Remove the sign-in first-run screen | Promoted a sign-in this build cannot do, and claimed data is sent to Google |
 
 Patches 0001 and 0002 are bug fixes that happen to be prerequisites. 0003 is a usability fix.
-0004 through 0010 are the de-Googling. 0011 and 0012 fix fullscreen video behaviour.
+0004 through 0010 are the de-Googling, as are 0014 and 0015. 0011 through 0013 fix fullscreen
+video behaviour.
 
 ### Removed by build flag
 
@@ -140,7 +148,13 @@ Patch 0005 is confirmed against a real in-page link tap: following a Reddit resu
 page keeps you in the browser, with Reddit's own "Open App" prompt left unused.
 
 Patches 0011 and 0012 are confirmed on device: fullscreen video follows the phone's orientation
-instead of forcing landscape, and sits centred in both portrait and landscape.
+instead of forcing landscape, and sits centred in both portrait and landscape. 0013 is confirmed
+by geometry read off the running page, for both a 16:9 video and one taller than the viewport.
+
+Patches 0014 and 0015 are confirmed on a **wiped profile**, which is the only honest test for
+either: the new tab page shows DuckDuckGo and a query resolves to `duckduckgo.com`, and the
+browser opens straight to the new tab page with no first-run screen — including after a force
+stop and relaunch, which is what fails if the Terms of Service acceptance does not persist.
 
 **Not fully verified.** Widevine is *detected* — a DRM test page reports `widevine` as the
 available key system — but actual protected playback has not been exercised end to end.
@@ -158,8 +172,14 @@ available key system — but actual protected playback has not been exercised en
 - **Patch 0005 is blunt.** All `http(s)` navigations stay in the browser. Some OAuth flows and
   deep links legitimately expect an app handoff and will no longer get one. Explicit schemes
   (`intent://`, `tel:`, `mailto:`, `sms:`) are untouched.
-- **Search engine still defaults to Google.** Changeable in Settings; patching the shipped
-  default requires going through `regional_capabilities` country logic.
+- **The DuckDuckGo default only applies to new profiles.** Patch 0014 seeds the default at
+  first run. An existing profile has `kDefaultSearchProviderData` persisted and
+  `DefaultSearchManager` prefers it, so upgrading over an older install keeps Google until you
+  change it in Settings → Search engine.
+- **The New Tab Page still shows sign-in and Chrome tips promos.** Removing the first-run
+  screen in 0015 uncovered them; they were always there, behind it. A sign-in card, a "Chrome
+  tips" card pitching Safe Browsing enhanced protection, and a "Restore your web apps" sheet —
+  none of which can function without an account.
 - **Passkeys (WebAuthn) do not work.** `Fido.FIDO2_PRIVILEGED_API` is restricted to
   Google-signed browsers, so a self-built Chromium is refused with `ApiException: 17`. This is
   inherent to building Chromium yourself, not caused by any patch here — verified by
@@ -175,9 +195,8 @@ Each has an exact file and line reference in [docs/stage-1-2.md](docs/stage-1-2.
   the flags are coupled in both directions and there is no GN-only configuration that works
 - `build_with_model_execution`, `enable_supervised_users`, `enable_offline_pages` — each
   blocked by a single GN `assert()`
-- The New Tab Page still carries Google branding, an AI Mode button and Discover
-- The first-run screen still promotes sign-in, and claims usage and crash data are sent to
-  Google — which is untrue in this build
+- The New Tab Page still carries an AI Mode button and Discover. Its Google logo is gone as a
+  side effect of 0014 — the NTP logo follows the default search engine
 - ARCore, Cardboard and Daydream manifest entries persist from library manifests, though their
   code is gone
 
