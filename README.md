@@ -7,7 +7,7 @@ Built and used on a Pixel 10 Pro XL. Not affiliated with Google or the Chromium 
 
 - **Base:** Chromium `153.0.7999.0` (commit `945b5115`)
 - **Target:** `is_desktop_android = true`, `target_cpu = "arm64"`
-- **Size:** 6 patches, ~190 insertions across 13 files
+- **Size:** 10 patches, 225 insertions across 18 files
 
 ## What you get
 
@@ -21,6 +21,9 @@ the right app, as they should.
 
 **📵 De-Googled!** No background check-ins to Google, and nothing about the forms you fill in gets
 sent off for analysis. Google's built-in AI features are removed entirely, not just switched off.
+
+**🧹 No dead Google UI.** Settings opens straight to what you can actually change — no sign-in
+prompts, no Google services page, no password manager row that only says it stopped working.
 
 **🎬 Video still works.** Ordinary video plays, and so does paid streaming like Netflix and Spotify —
 usually the first thing to break in a privacy-focused browser.
@@ -48,9 +51,13 @@ without forking anything.
 | 0004 | Remove variations and network-time callbacks | Two periodic requests to Google, sent regardless of activity |
 | 0005 | Keep web navigations in the browser | `http(s)` links no longer get handed to whichever app claims the domain |
 | 0006 | Stop Autofill crowdsourcing uploads | Form structure was uploaded to Google to train its field-classification heuristics |
+| 0007 | Remove the GCM push channel | Google Cloud Messaging services, the c2dm permission and the Firebase receiver |
+| 0008 | Guard omnibox vector icon calls | Unblocks disabling the Google XR SDKs, which previously broke the build |
+| 0009 | Hide Google Password Manager and sign-in promo | Both were permanently non-functional and advertised as broken |
+| 0010 | Remove the "You and Google" settings section | Sign-in and Google services entries, neither of which can work here |
 
 Patches 0001 and 0002 are bug fixes that happen to be prerequisites. 0003 is a usability fix.
-0004 through 0006 are the de-Googling.
+0004 through 0010 are the de-Googling.
 
 ### Removed by build flag
 
@@ -152,8 +159,11 @@ Each has an exact file and line reference in [docs/stage-1-2.md](docs/stage-1-2.
   the flags are coupled in both directions and there is no GN-only configuration that works
 - `build_with_model_execution`, `enable_supervised_users`, `enable_offline_pages` — each
   blocked by a single GN `assert()`
-- Sign-in, Sync, and New Tab Page Google surfaces still appear in the UI
-- Android manifest entries for Firebase, GCM, Play Core, Cast and Google Backup
+- The New Tab Page still carries Google branding, an AI Mode button and Discover
+- The first-run screen still promotes sign-in, and claims usage and crash data are sent to
+  Google — which is untrue in this build
+- ARCore, Cardboard and Daydream manifest entries persist from library manifests, though their
+  code is gone
 
 ### Already inert — no work needed
 

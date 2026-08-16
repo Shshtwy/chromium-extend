@@ -1,7 +1,7 @@
 From 73d1e506f14974ef43195de6766744676c43077f Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Sat, 15 Aug 2026 21:20:52 +0000
-Subject: [PATCH 5/7] Keep web navigations in the browser instead of handing
+Subject: [PATCH 05/10] Keep web navigations in the browser instead of handing
  them to apps
 
 Android app-link handling sends http(s) URLs to whichever app has claimed the domain, with no prompt and no in-browser setting to prevent it. Following a search result to Reddit or YouTube would leave the browser entirely.
