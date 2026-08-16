@@ -1,0 +1,15 @@
+Chromium Extend
+Copyright (c) 2026 Chromium Extend contributors
+
+This product includes modifications to Chromium source code.
+
+Chromium
+Copyright (c) The Chromium Authors
+Licensed under the BSD 3-Clause License.
+https://chromium.googlesource.com/chromium/src/+/main/LICENSE
+
+The patch files under patches/ are derived from Chromium source and remain
+subject to that license.
+
+Chromium is a trademark of Google LLC. This project is not affiliated with,
+endorsed by, or sponsored by Google LLC or the Chromium project.
