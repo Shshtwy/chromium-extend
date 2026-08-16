@@ -7,7 +7,7 @@ Built and used on a Pixel 10 Pro XL. Not affiliated with Google or the Chromium 
 
 - **Base:** Chromium `153.0.7999.0` (commit `945b5115`)
 - **Target:** `is_desktop_android = true`, `target_cpu = "arm64"`
-- **Size:** 10 patches, 225 insertions across 18 files
+- **Size:** 12 patches, 251 insertions across 20 files
 
 ## What you get
 
@@ -25,8 +25,10 @@ sent off for analysis. Google's built-in AI features are removed entirely, not j
 **🧹 No dead Google UI.** Settings opens straight to what you can actually change — no sign-in
 prompts, no Google services page, no password manager row that only says it stopped working.
 
-**🎬 Video still works.** Ordinary video plays, and so does paid streaming like Netflix and Spotify —
-usually the first thing to break in a privacy-focused browser.
+**🎬 Video still works, and fullscreen behaves.** Ordinary video plays, and so does paid streaming
+like Netflix and Spotify — usually the first thing to break in a privacy-focused browser. Fullscreen
+respects your rotation lock instead of forcing landscape, and fills the screen properly rather than
+sitting off-centre next to the camera cutout.
 
 **🛡️ Still safe to browse.** Protections against fake certificates and downgraded connections are
 deliberately kept. Privacy here doesn't come at the cost of security.
@@ -64,9 +66,11 @@ without forking anything.
 | 0008 | Guard omnibox vector icon calls | Unblocks disabling the Google XR SDKs, which previously broke the build |
 | 0009 | Hide Google Password Manager and sign-in promo | Both were permanently non-functional and advertised as broken |
 | 0010 | Remove the "You and Google" settings section | Sign-in and Google services entries, neither of which can work here |
+| 0011 | Ignore page requests to lock screen orientation | Fullscreen video forced landscape, overriding the system rotation lock |
+| 0012 | Draw fullscreen content into the display cutout | Fullscreen video was letterboxed off the camera edge, leaving it off-centre |
 
 Patches 0001 and 0002 are bug fixes that happen to be prerequisites. 0003 is a usability fix.
-0004 through 0010 are the de-Googling.
+0004 through 0010 are the de-Googling. 0011 and 0012 fix fullscreen video behaviour.
 
 ### Removed by build flag
 
@@ -134,6 +138,9 @@ zero references to ML Kit or AICore.
 
 Patch 0005 is confirmed against a real in-page link tap: following a Reddit result from a search
 page keeps you in the browser, with Reddit's own "Open App" prompt left unused.
+
+Patches 0011 and 0012 are confirmed on device: fullscreen video follows the phone's orientation
+instead of forcing landscape, and sits centred in both portrait and landscape.
 
 **Not fully verified.** Widevine is *detected* — a DRM test page reports `widevine` as the
 available key system — but actual protected playback has not been exercised end to end.
