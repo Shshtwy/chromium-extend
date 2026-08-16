@@ -34,6 +34,15 @@ deliberately kept. Privacy here doesn't come at the cost of security.
 **🐛 Two crashes fixed.** The stock build crashes when you open an extension's window, and again if
 you tap sign-in. Both are fixed.
 
+## Screenshots
+
+| | |
+| --- | --- |
+| <img src="assets/screenshots/02-extensions-menu.png" width="260"> | <img src="assets/screenshots/03-extension-popup.png" width="260"> |
+| **The extensions menu on a phone.** Per-site permissions and *Pin to toolbar* — upstream only offers this at tablet widths. | **An extension's own window.** Dark Reader running from the toolbar, exactly as it would on a desktop. |
+| <img src="assets/screenshots/01-browsing.png" width="260"> | <img src="assets/screenshots/04-settings.png" width="260"> |
+| **Extension icons in the toolbar.** Pinned extensions sit next to the address bar. | **Settings opens straight to Basics.** No sign-in row, no Google services page. |
+
 ## Why
 
 Chromium's Desktop Android build supports real browser extensions, which mobile Chrome does
