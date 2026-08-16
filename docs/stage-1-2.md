@@ -753,6 +753,37 @@ Beyond the Settings entries already scoped, the New Tab Page still carries Googl
 **AI Mode** button, Discover, Chrome tips, and a sign-in promo. The NTP is more visible than the
 settings entries and belongs in Stage 5's scope.
 
+### GN assert findings (tested 2026-08-15)
+
+The three abandoned flags were assumed to share one cause — test targets in the graph asserting
+on production flags. Testing showed they do not.
+
+**`enable_supervised_users` — structurally blocked, not a test artifact.** Relaxing the assert at
+`chrome/test/BUILD.gn:57` only exposed a second one at **`chrome/android/BUILD.gn:15`**, reached
+via `//chrome/android:chrome_junit_tests` from the root `BUILD.gn`. That file builds
+`chrome_public_apk` itself, so the flag is genuinely required by the Android build. Removing
+Family Link support needs real code changes, not assert relaxation. Attempt reverted.
+
+**`enable_offline_pages` — assert is test-only.** It fires at
+`chrome/browser/offline_pages/BUILD.gn:7`, reached from `chrome/test/BUILD.gn:1581`
+(`//chrome/browser/offline_pages:impl`). Unlike supervised users, nothing in `chrome/android`
+asserts on it, so this one may be reachable by guarding the test dependency. Untested.
+
+**`build_with_model_execution` — needs dependency surgery.** `//chrome/browser/ai` is referenced
+from at least five places in `chrome/test/BUILD.gn`, so removing the dep is not a single edit.
+Note the practical value is limited: the AI models and services are already disabled through
+`use_mlkit_for_aicore`, `enable_glic_internal_resources`,
+`build_with_internal_optimization_guide`, `enable_ml_internal` and `use_on_device_model_service`.
+This flag would remove the remaining framework code, which is a size win rather than a
+behaviour change.
+
+### Pre-existing limitation: passkeys
+
+`Fido.FIDO2_PRIVILEGED_API` is restricted to Google-signed browsers. A self-built Chromium is
+refused with `ApiException: 17`, logged by `cr_ChromiumWebauthn` at startup. Confirmed
+pre-existing by reproducing it on an earlier build, so it is inherent to self-building rather
+than caused by any patch in this series.
+
 ### Build diagnostics: where errors actually appear
 
 `autoninja` writes almost nothing to stdout/stderr under siso — a redirected build log may contain

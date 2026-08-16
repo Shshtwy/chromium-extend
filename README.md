@@ -137,6 +137,11 @@ available key system — but actual protected playback has not been exercised en
   (`intent://`, `tel:`, `mailto:`, `sms:`) are untouched.
 - **Search engine still defaults to Google.** Changeable in Settings; patching the shipped
   default requires going through `regional_capabilities` country logic.
+- **Passkeys (WebAuthn) do not work.** `Fido.FIDO2_PRIVILEGED_API` is restricted to
+  Google-signed browsers, so a self-built Chromium is refused with `ApiException: 17`. This is
+  inherent to building Chromium yourself, not caused by any patch here — verified by
+  reproducing it on an earlier build.
+- **Web Push is gone**, as a consequence of removing the GCM channel in patch 0007.
 
 ## Not done yet
 
