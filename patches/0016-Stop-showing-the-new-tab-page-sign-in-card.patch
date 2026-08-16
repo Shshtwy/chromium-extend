@@ -1,0 +1,31 @@
+From 9fe9aae65fa8a37693dd564fff1bc78fba655925 Mon Sep 17 00:00:00 2001
+From: Chromium Extend <noreply@localhost>
+Date: Sun, 16 Aug 2026 08:07:00 +0000
+Subject: [PATCH 16/18] Stop showing the new tab page sign-in card
+
+The card offers to sign into a Google account to personalise the feed, which
+this build deliberately cannot do, so it is a dead end that cannot be dismissed
+permanently.
+---
+ .../ui/signin/signin_promo/NtpSigninPromoDelegate.java       | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/chrome/browser/ui/android/signin/java/src/org/chromium/chrome/browser/ui/signin/signin_promo/NtpSigninPromoDelegate.java b/chrome/browser/ui/android/signin/java/src/org/chromium/chrome/browser/ui/signin/signin_promo/NtpSigninPromoDelegate.java
+index c7a41cd038..cb0b1a7391 100644
+--- a/chrome/browser/ui/android/signin/java/src/org/chromium/chrome/browser/ui/signin/signin_promo/NtpSigninPromoDelegate.java
++++ b/chrome/browser/ui/android/signin/java/src/org/chromium/chrome/browser/ui/signin/signin_promo/NtpSigninPromoDelegate.java
+@@ -173,7 +173,10 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
+ 
+     @Override
+     boolean canShowPromo() {
+-        return mPromoState != PromoState.NONE;
++        // De-Googled build: the new tab page sign-in card is never shown. It offers to
++        // sign into a Google account to personalise the feed, which this build
++        // deliberately cannot do, so the card is a dead end.
++        return false;
+     }
+ 
+     @Override
+-- 
+2.34.1
+

@@ -7,7 +7,7 @@ Built and used on a Pixel 10 Pro XL. Not affiliated with Google or the Chromium 
 
 - **Base:** Chromium `153.0.7999.0` (commit `945b5115`)
 - **Target:** `is_desktop_android = true`, `target_cpu = "arm64"`
-- **Size:** 15 patches, 330 insertions across 23 files
+- **Size:** 18 patches, 356 insertions across 26 files
 
 ## What you get
 
@@ -75,10 +75,13 @@ without forking anything.
 | 0013 | Size fullscreen video to its picture | The seekbar sat at the bottom of the screen instead of on the video |
 | 0014 | DuckDuckGo as the default search provider | Google was the shipped default, selected by engine ID rather than list order |
 | 0015 | Remove the sign-in first-run screen | Promoted a sign-in this build cannot do, and claimed data is sent to Google |
+| 0016 | Stop showing the NTP sign-in card | "Get better content" — sign in to personalise a feed this build cannot use |
+| 0017 | Remove the Chrome tips module | A carousel of Google promos: history sync, sign-in, passwords, Safe Browsing |
+| 0018 | Never offer the web app restore promo | Restores apps from devices "connected to this account" — impossible here |
 
 Patches 0001 and 0002 are bug fixes that happen to be prerequisites. 0003 is a usability fix.
-0004 through 0010 are the de-Googling, as are 0014 and 0015. 0011 through 0013 fix fullscreen
-video behaviour.
+0004 through 0010 are the de-Googling, as are 0014 through 0018. 0011 through 0013 fix
+fullscreen video behaviour.
 
 ### Removed by build flag
 
@@ -176,10 +179,8 @@ available key system — but actual protected playback has not been exercised en
   first run. An existing profile has `kDefaultSearchProviderData` persisted and
   `DefaultSearchManager` prefers it, so upgrading over an older install keeps Google until you
   change it in Settings → Search engine.
-- **The New Tab Page still shows sign-in and Chrome tips promos.** Removing the first-run
-  screen in 0015 uncovered them; they were always there, behind it. A sign-in card, a "Chrome
-  tips" card pitching Safe Browsing enhanced protection, and a "Restore your web apps" sheet —
-  none of which can function without an account.
+- **The Gemini button is still in the bottom toolbar.** The sparkle opens a Gemini sheet that
+  asks you to verify a Google account, so it cannot do anything in this build. Not yet removed.
 - **Passkeys (WebAuthn) do not work.** `Fido.FIDO2_PRIVILEGED_API` is restricted to
   Google-signed browsers, so a self-built Chromium is refused with `ApiException: 17`. This is
   inherent to building Chromium yourself, not caused by any patch here — verified by
