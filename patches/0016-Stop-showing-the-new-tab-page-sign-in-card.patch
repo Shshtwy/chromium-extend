@@ -1,7 +1,7 @@
 From 9fe9aae65fa8a37693dd564fff1bc78fba655925 Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Sun, 16 Aug 2026 08:07:00 +0000
-Subject: [PATCH 16/23] Stop showing the new tab page sign-in card
+Subject: [PATCH 16/24] Stop showing the new tab page sign-in card
 
 The card offers to sign into a Google account to personalise the feed, which
 this build deliberately cannot do, so it is a dead end that cannot be dismissed

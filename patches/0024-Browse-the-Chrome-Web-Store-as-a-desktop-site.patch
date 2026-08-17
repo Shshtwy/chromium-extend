@@ -1,0 +1,104 @@
+From a5901934207c9d82bcc729c1155e4ef80dface6c Mon Sep 17 00:00:00 2001
+From: Chromium Extend <noreply@localhost>
+Date: Mon, 17 Aug 2026 16:51:13 +0000
+Subject: [PATCH 24/24] Browse the Chrome Web Store as a desktop site
+
+The store serves a mobile layout to this browser, and that layout has no install
+button, so "Discover more extensions" leads to a page that cannot install
+anything unless the user knows to switch to desktop mode by hand. Extensions are
+a headline feature of this build, so that dead end is worth removing.
+
+Seeds a REQUEST_DESKTOP_SITE content setting for chromewebstore.google.com at
+startup, through the same DesktopSiteUtils API the Request desktop site menu
+item uses. Being a content setting rather than a rewritten link, it applies
+however the store is reached: the discover link, a bookmark, or a typed URL.
+
+Applied once and recorded in shared preferences, so anyone who later turns
+desktop mode off for the store keeps that choice instead of having it reapplied
+on the next launch. Skipped for off-the-record profiles.
+---
+ .../chrome/browser/ChromeTabbedActivity.java  | 29 +++++++++++++++++++
+ .../preferences/ChromePreferenceKeys.java     |  9 ++++++
+ 2 files changed, 38 insertions(+)
+
+diff --git a/chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java b/chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java
+index 9ea6b8fbb8..22a4e46096 100644
+--- a/chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java
++++ b/chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java
+@@ -232,6 +232,7 @@ import org.chromium.chrome.browser.preferences.Pref;
+ import org.chromium.chrome.browser.price_change.PriceChangeModuleBuilder;
+ import org.chromium.chrome.browser.profiles.OtrProfileId;
+ import org.chromium.chrome.browser.profiles.Profile;
++import org.chromium.chrome.browser.desktop_site.DesktopSiteUtils;
+ import org.chromium.chrome.browser.profiles.ProfileManager;
+ import org.chromium.chrome.browser.profiles.ProfileProvider;
+ import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
+@@ -1625,10 +1626,38 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
+         }
+     }
+ 
++    /**
++     * De-Googled build: browse the Chrome Web Store as a desktop site.
++     *
++     * <p>The store's mobile site does not offer an install button, so "Discover more extensions"
++     * leads to a page that cannot install anything unless the user knows to switch to desktop mode
++     * by hand. This build ships extensions as a headline feature, so that dead end is worth
++     * removing.
++     *
++     * <p>Applied once and recorded in shared preferences. Anyone who later turns desktop mode off
++     * for the store keeps that choice rather than having it reapplied on the next launch.
++     */
++    private void maybeSeedWebstoreDesktopSiteException(Profile profile) {
++        if (profile == null || profile.isOffTheRecord()) return;
++
++        SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
++        if (prefs.readBoolean(ChromePreferenceKeys.WEBSTORE_DESKTOP_SITE_SEEDED, false)) {
++            return;
++        }
++
++        DesktopSiteUtils.setRequestDesktopSiteContentSettingsForUrl(
++                profile,
++                new GURL(UrlConstants.CHROME_WEBSTORE_URL),
++                /* useDesktopUserAgent= */ true);
++        prefs.writeBoolean(ChromePreferenceKeys.WEBSTORE_DESKTOP_SITE_SEEDED, true);
++    }
++
+     @Override
+     public void finishNativeInitialization() {
+         try (TraceEvent te = TraceEvent.scoped("ChromeTabbedActivity.finishNativeInitialization")) {
+             assert getProfileProviderSupplier().get() != null;
++            maybeSeedWebstoreDesktopSiteException(
++                    getProfileProviderSupplier().get().getOriginalProfile());
+             new NavigationPredictorBridge(
+                     getProfileProviderSupplier().get().getOriginalProfile(),
+                     getLifecycleDispatcher(),
+diff --git a/chrome/browser/preferences/android/java/src/org/chromium/chrome/browser/preferences/ChromePreferenceKeys.java b/chrome/browser/preferences/android/java/src/org/chromium/chrome/browser/preferences/ChromePreferenceKeys.java
+index 44026d6ae9..65f3a08eb5 100644
+--- a/chrome/browser/preferences/android/java/src/org/chromium/chrome/browser/preferences/ChromePreferenceKeys.java
++++ b/chrome/browser/preferences/android/java/src/org/chromium/chrome/browser/preferences/ChromePreferenceKeys.java
+@@ -380,6 +380,14 @@ public final class ChromePreferenceKeys {
+     public static final String DEVICE_LOCK_SHOW_ALERT_IF_REMOVED =
+             "Chrome.DeviceLock.ShowAlertIfRemoved";
+ 
++    /**
++     * De-Googled build: whether the one-time desktop-site exception for the Chrome Web Store has
++     * been applied. Seeded once so that a user who later turns it off is not overridden on the
++     * next launch.
++     */
++    public static final String WEBSTORE_DESKTOP_SITE_SEEDED =
++            "Chrome.Extensions.WebstoreDesktopSiteSeeded";
++
+     /**
+      * De-Googled build: whether downloads are offered to an installed download manager instead of
+      * being fetched by the browser. Off by default, so the browser behaves as usual until asked.
+@@ -1201,6 +1209,7 @@ public final class ChromePreferenceKeys {
+                 APPEARANCE_SETTINGS_VIEW_COUNT,
+                 AUTOFILL_ASSISTANT_FIRST_TIME_LITE_SCRIPT_USER,
+                 DOWNLOAD_USE_EXTERNAL_DOWNLOAD_MANAGER,
++                WEBSTORE_DESKTOP_SITE_SEEDED,
+                 AUTOFILL_ASSISTANT_PROACTIVE_HELP_ENABLED,
+                 AUTOFILL_THIRD_PARTY_MODE_STATE,
+                 AUXILIARY_SEARCH_CONSUMER_SCHEMA_FOUND,
+-- 
+2.34.1
+
