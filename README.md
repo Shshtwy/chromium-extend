@@ -150,6 +150,65 @@ autoninja -C out/<name> -j 12 chrome_public_apk
 See [BUILDING.md](BUILDING.md) for the full workflow, including how files move between the
 container and the host.
 
+## Verifying a build
+
+**The build is reproducible.** Building the same source twice produces a byte-identical APK, so
+you do not have to trust the published binary — you can rebuild it and compare.
+
+This was measured, not assumed. The same tree was built two ways:
+
+| Build | How | SHA-256 |
+| --- | --- | --- |
+| `out/PixelFold` | incremental, with a day of history including an applied-then-reverted patch | `19577669…fb492d48` |
+| `out/Verify` | clean, from nothing, in a differently-named directory | `19577669…fb492d48` |
+
+Identical hashes, identical size, from a 6h15m clobber build against an incremental one. The
+differing directory name matters: a build path leaking into a binary is the most common cause of
+irreproducibility, and Chromium's [deterministic build
+support](https://chromium.googlesource.com/chromium/src/+/main/docs/deterministic_builds.md)
+holds here. Two other things that usually break Android reproducibility are already handled
+upstream — every zip entry is stamped `2001-01-01 00:00` rather than build time, and the APK is
+signed with `build/android/chromium-debug.keystore`, which is checked into Chromium's tree and
+used by default, so signatures match too.
+
+### To verify a build yourself
+
+1. Check out Chromium at base commit `945b5115`
+2. Apply the series: `git am patches/*.patch`
+3. Use the `args.gn` shown above
+4. `gn gen out/<name> && autoninja -C out/<name> -j 12 chrome_public_apk`
+5. `sha256sum out/<name>/apks/ChromePublic.apk`
+
+A rebuild from the same commit should give the same hash as a release built from that commit.
+
+### What this does and does not prove
+
+**Proven:** the build is deterministic in this container — directory names, build history, and
+clobber-versus-incremental do not change the output.
+
+**Not yet proven:** that a rebuild on *different* hardware, or in a container built at a
+different time, produces the same bytes. `docker/Dockerfile` starts from `ubuntu:22.04` and
+installs packages with `apt-get`, so the image drifts as upstream packages change. Chromium
+ships a hermetic toolchain through `DEPS`, so the host package set most likely does not affect
+the output — but that link is untested here, and a reproducibility claim is the wrong place for
+"most likely". If you rebuild on your own machine and get a different hash, please open an issue;
+that is the missing measurement.
+
+### Release hashes
+
+Published APKs are signed with the same checked-in debug key, so they are not unique to this
+machine.
+
+| Release | SHA-256 |
+| --- | --- |
+| v1.2 | `8fe506d5e89da5a8c4c8feff0e74d8151334ee820eccf1223ca4a044ddfb6d33` |
+
+The v1.2 hash is published for download integrity — it confirms the file you fetched is the file
+that was uploaded. On its own it is self-attested and proves nothing about provenance; the
+rebuild above is what does that. v1.2 was built from the 21-patch tree, before the reproducibility
+test was run, so it has not itself been rebuilt and compared. Future releases will publish a hash
+verified against a clean rebuild.
+
 ## Status
 
 **Verified on device.** No crashes across a full session. Extensions install and run
