@@ -1,0 +1,34 @@
+From 9ffb76aee9e7753ae33909ba8441d75e8813dc05 Mon Sep 17 00:00:00 2001
+From: Chromium Extend <noreply@localhost>
+Date: Tue, 18 Aug 2026 06:38:59 +0000
+Subject: [PATCH 31/31] Reword the toolbar shortcut window width note
+
+The description on the New tab and Add to bookmarks options read "Only available
+for small windows", which reads as a restriction that excludes phones. It means
+the opposite: a phone is a small window, so those shortcuts do work, and they are
+hidden on tablets and wide desktop windows where the same actions already appear
+in the tab strip or omnibox.
+
+Now reads "Hidden when the browser window is wide", which describes the same rule
+without implying the shortcut is unavailable on the device most people run this
+on.
+---
+ chrome/browser/ui/android/strings/android_chrome_strings.grd | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/chrome/browser/ui/android/strings/android_chrome_strings.grd b/chrome/browser/ui/android/strings/android_chrome_strings.grd
+index 21d88260be..fa8fe01efb 100644
+--- a/chrome/browser/ui/android/strings/android_chrome_strings.grd
++++ b/chrome/browser/ui/android/strings/android_chrome_strings.grd
+@@ -4114,7 +4114,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
+         Current recommendation:  <ph name="RECOMMENDATION">%1$s<ex>New tab</ex></ph>
+       </message>
+       <message name="IDS_ADAPTIVE_TOOLBAR_BUTTON_PREFERENCE_BASED_ON_WINDOW_WIDTH_DESCRIPTION" desc="Description for based window width option.">
+-        Only available for small windows
++        Hidden when the browser window is wide
+       </message>
+       <message name="IDS_TOOLBAR_SHORTCUT" desc="Title for toolbar shortcut toggle button in adaptive toolbar button preference page.">
+         Toolbar shortcut
+-- 
+2.34.1
+
