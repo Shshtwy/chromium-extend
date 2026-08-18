@@ -1,7 +1,7 @@
 From 13d92bb737d4bd4e9f10854fec5102cd2b6464b5 Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Sun, 16 Aug 2026 17:29:54 +0000
-Subject: [PATCH 23/34] Add a setting to choose the download manager
+Subject: [PATCH 23/35] Add a setting to choose the download manager
 
 Settings, Downloads now has "Use an external download manager", which gates the
 handoff added in the previous patch.

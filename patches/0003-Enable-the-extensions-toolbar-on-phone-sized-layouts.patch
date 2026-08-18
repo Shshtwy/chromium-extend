@@ -1,7 +1,7 @@
 From e287d479257491fc302dafa4a54cbc8e49071c7e Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Sat, 15 Aug 2026 17:56:36 +0000
-Subject: [PATCH 03/34] Enable the extensions toolbar on phone-sized layouts
+Subject: [PATCH 03/35] Enable the extensions toolbar on phone-sized layouts
 
 The extensions toolbar was reachable only on tablet-width layouts, so on a phone there was no way to open an extension popup, pin an extension, or set per-site permissions - chrome://extensions only offers enable/disable/remove.
 

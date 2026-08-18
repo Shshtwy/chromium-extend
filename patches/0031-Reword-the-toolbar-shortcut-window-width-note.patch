@@ -1,7 +1,7 @@
 From 9ffb76aee9e7753ae33909ba8441d75e8813dc05 Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Tue, 18 Aug 2026 06:38:59 +0000
-Subject: [PATCH 31/34] Reword the toolbar shortcut window width note
+Subject: [PATCH 31/35] Reword the toolbar shortcut window width note
 
 The description on the New tab and Add to bookmarks options read "Only available
 for small windows", which reads as a restriction that excludes phones. It means

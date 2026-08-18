@@ -1,7 +1,7 @@
 From 6b8d8b8af4c411de4dee6c2e40b5a1be00a7cd59 Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Tue, 18 Aug 2026 16:40:34 +0000
-Subject: [PATCH 34/34] Default the toolbar shortcut to Share rather than to
+Subject: [PATCH 34/35] Default the toolbar shortcut to Share rather than to
  browsing habits
 
 The toolbar shortcut defaulted to AUTO, shown in settings as "based on your usage".
