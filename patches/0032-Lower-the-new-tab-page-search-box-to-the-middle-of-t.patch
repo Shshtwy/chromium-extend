@@ -1,7 +1,7 @@
 From 6baa2a5c6df216e8d545dcf313073d5f26193c12 Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Tue, 18 Aug 2026 16:20:52 +0000
-Subject: [PATCH 32/33] Lower the new tab page search box to the middle of the
+Subject: [PATCH 32/34] Lower the new tab page search box to the middle of the
  screen
 
 Patch 0027 added a top padding that put the search box roughly 40% down the screen, to
