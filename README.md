@@ -99,7 +99,7 @@ without forking anything.
 | 0027 | Lower the search box into thumb reach | Sits around 40% down the page rather than near the top |
 | 0028 | Move the tab switcher toolbar to the bottom | Its buttons stayed at the top while the browsing toolbar sits at the bottom |
 | 0029 | Pick which download manager receives downloads | Lists installed handlers, or ask every time |
-| 0030 | Add an incognito toggle to the bottom bar | Restores the fifth button, red while incognito is active |
+| 0030 | Add an incognito toggle to the bottom bar | Fills the slot 0019 emptied; red while incognito is active |
 | 0031 | Reword the toolbar shortcut window width note | "Only available for small windows" read as excluding phones |
 | 0032 | Lower the search box to the middle of the screen | 40% was still higher than a thumb comfortably reaches |
 | 0033 | Stop painting white while a page loads on a dark theme | Three surfaces defaulted to white; adds the darken-websites setting |
