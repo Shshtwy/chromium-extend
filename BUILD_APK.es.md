@@ -80,7 +80,6 @@ is_component_build = false
 is_debug = false
 
 # Chromium Desktop Android
-automatically_apply_desktop_user_agent = false
 is_desktop_android = true
 enable_extensions_core = true
 
