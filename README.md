@@ -7,7 +7,7 @@ Built and used on a Pixel 10 Pro XL. Not affiliated with Google or the Chromium 
 
 - **Base:** Chromium `153.0.7999.0` (commit `945b5115`)
 - **Target:** `is_desktop_android = true`, `target_cpu = "arm64"`
-- **Size:** 35 patches, 952 insertions across 56 files
+- **Size:** 37 patches, 970 insertions across 58 files
 
 ## What you get
 
@@ -105,6 +105,8 @@ without forking anything.
 | 0033 | Stop painting white while a page loads on a dark theme | Three surfaces defaulted to white; adds the darken-websites setting |
 | 0034 | Default the toolbar shortcut to Share | It defaulted to "based on your usage", which moves the button as habits change |
 | 0035 | Let the user add their own search engine | Chromium's add-engine screen existed but was switched off on Android |
+| 0036 | Remove the built-in Gemini and AI Mode shortcuts | @gemini and @aimode shipped as search shortcuts pointing at Google |
+| 0037 | Round the search engine icon in the omnibox | The rounding provider was built and updated but never attached to the view |
 
 Patches 0001 and 0002 are bug fixes that happen to be prerequisites. 0003 is a usability fix.
 0004 through 0010 are the de-Googling, as are 0014 through 0021. 0011 through 0013 fix
@@ -113,7 +115,8 @@ through 0028 are usability changes: the Web Store, the AI Mode button, what the 
 shows by default, and where the toolbars sit. 0029 through 0033 continue in that vein: choosing
 the download manager, the incognito toggle, clearer wording in settings, where the search box
 sits, the white flash on a dark theme, which shortcut the toolbar starts with, and adding your
-own search engine.
+own search engine. 0036 drops the built-in Google AI search shortcuts and 0037 fixes the shape
+of the engine icon in the omnibox.
 
 Sign-in has no single gate in Chromium. Patches 0009, 0010, 0015, 0016 and 0020 each remove a
 different entry point — the settings row, the "You and Google" section, the first-run screen,

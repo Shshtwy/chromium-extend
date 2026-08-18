@@ -1,7 +1,7 @@
 From 14260b4b1d7f8a5dc7f0f0b499aa657844c66d96 Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Sat, 15 Aug 2026 04:07:03 +0000
-Subject: [PATCH 02/35] Harden extensions menu against a missing toolbar
+Subject: [PATCH 02/37] Harden extensions menu against a missing toolbar
  coordinator
 
 The extensions toolbar coordinator is only created for Desktop Android, but extension support can still be enabled on a phone-sized layout. Guard against a null coordinator and fall back to opening the extension management page rather than crashing.

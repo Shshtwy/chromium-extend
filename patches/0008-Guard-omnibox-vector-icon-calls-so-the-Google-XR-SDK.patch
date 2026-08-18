@@ -1,7 +1,7 @@
 From b5cb998719452d91010b235fcf3461e53cecd711 Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Sun, 16 Aug 2026 01:55:19 +0000
-Subject: [PATCH 08/35] Guard omnibox vector icon calls so the Google XR SDKs
+Subject: [PATCH 08/37] Guard omnibox vector icon calls so the Google XR SDKs
  can be removed
 
 AutocompleteMatch::GetVectorIcon and OmniboxAction::GetVectorIcon are declared behind (!IS_ANDROID || ENABLE_VR) && !IS_IOS. On Android that reduces to ENABLE_VR, whose default derives from enable_openxr || enable_cardboard || enable_arcore - so disabling the Google XR SDKs removed the methods while three call sites still used them unconditionally.
