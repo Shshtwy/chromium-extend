@@ -1,7 +1,10 @@
-# Chromium Extend <img src="assets/chromium-logo.svg" width="52" align="right" alt="">
+# Bare <img src="assets/bare-logo.svg" width="52" align="right" alt="">
 
-A small patch series for **Chromium Desktop Android** that removes Google tracking,
-telemetry, and AI integration while keeping browser extensions and video playback working.
+**A browser with the extras taken out.** Bare is a patch series on **Chromium Desktop
+Android** that removes Google tracking, telemetry and AI integration while keeping browser
+extensions and video playback working.
+
+[barebrowser.org](https://barebrowser.org) · installs as `org.barebrowser`
 
 Built and used on a Pixel 10 Pro XL. Not affiliated with Google or the Chromium project.
 
@@ -36,7 +39,7 @@ sitting off-centre next to the camera cutout.
 
 **🌙 Dark stays dark.** On a dark theme, loading a page used to flash white first, which is
 glaring on an OLED screen at night. Three separate parts of the browser defaulted to white before
-a page painted; all three now follow your theme. There is also a setting to have Chromium darken
+a page painted; all three now follow your theme. There is also a setting to have Bare darken
 light sites itself, off by default.
 
 **🔎 Add your own search engine.** Chromium ships an add-engine screen on Android but leaves it
@@ -63,8 +66,8 @@ you tap sign-in. Both are fixed.
 
 Chromium's Desktop Android build supports real browser extensions, which mobile Chrome does
 not. That makes it a genuinely better browser to live in — but it still ships Google's AI
-stack, phones home on a schedule, and hands your links to other apps. This series fixes that
-without forking anything.
+stack, phones home on a schedule, and hands your links to other apps. Bare fixes that as a
+patch series rather than a fork, so every change stays readable and reviewable.
 
 ## What the patches do
 
@@ -243,6 +246,7 @@ machine.
 | Release | SHA-256 |
 | --- | --- |
 | v1.2 | `8fe506d5e89da5a8c4c8feff0e74d8151334ee820eccf1223ca4a044ddfb6d33` |
+| v1.4 | `e70364b58f215c3a390fe92622d844112462ea21a604da15e77ec40f3e082105` |
 
 The v1.2 hash is published for download integrity — it confirms the file you fetched is the file
 that was uploaded. On its own it is self-attested and proves nothing about provenance; the
@@ -300,6 +304,13 @@ available key system — but actual protected playback has not been exercised en
   inherent to building Chromium yourself, not caused by any patch here — verified by
   reproducing it on an earlier build.
 - **Web Push is gone**, as a consequence of removing the GCM channel in patch 0007.
+- **Password managers need one setting turned on.** Chromium uses its own autofill by default
+  and never consults Android's autofill framework, so Bitwarden, 1Password and similar are
+  simply never asked. Turn on Settings → Autofill options → use another service and they work.
+  This is upstream behaviour, not something these patches introduce; the availability check
+  also refuses Google's own autofill service, so the path is third-party only.
+- **A custom search engine has no logo on the new tab page.** Engines added by hand carry no
+  logo image, so the page shows none. Cosmetic only.
 
 ## Not done yet
 
@@ -329,7 +340,7 @@ patches/            the patch series, applied in order
 docker/             container image definition
 docker-compose.yml  build environment
 builder.sh          container wrapper
-assets/             logo used in this README
+assets/             logo and screenshots used in this README
 docs/design.md      design decisions and rationale
 docs/stage-1-2.md   execution notes, diagnoses, and results
 ```
@@ -343,10 +354,12 @@ The patches modify Chromium source and are therefore subject to Chromium's
 **BSD-3-Clause** license. See the
 [Chromium LICENSE](https://chromium.googlesource.com/chromium/src/+/main/LICENSE).
 
+`assets/bare-logo.svg` is the Bare mark and belongs to this project.
+
 `assets/chromium-logo.svg` is from
 [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Chromium_Logo.svg), in the public
-domain under `PD-textlogo` (simple geometric shapes, below the threshold of originality).
-Public domain covers copyright only — the mark itself remains a trademark, and it is used here
-to identify the upstream project this patches, not to suggest endorsement.
+domain under `PD-textlogo`. It is retained only to identify the upstream project these patches
+apply to, not to suggest endorsement.
 
-Chromium is a trademark of Google LLC. This project is unaffiliated.
+Chromium is a trademark of Google LLC. Bare is unaffiliated with Google or the Chromium
+project, and is not Chromium.
