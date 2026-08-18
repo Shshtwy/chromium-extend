@@ -1,7 +1,7 @@
 From 83391725b40685b69d896362e6cc0969c8cbdd84 Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Tue, 18 Aug 2026 03:38:03 +0000
-Subject: [PATCH 25/27] Turn off the AI Mode omnibox button by default
+Subject: [PATCH 25/28] Turn off the AI Mode omnibox button by default
 
 The button is registered with a default of true, putting an AI entry point in
 the omnibox on every profile. This build removes Google AI surfaces elsewhere,

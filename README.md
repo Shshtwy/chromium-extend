@@ -7,7 +7,7 @@ Built and used on a Pixel 10 Pro XL. Not affiliated with Google or the Chromium 
 
 - **Base:** Chromium `153.0.7999.0` (commit `945b5115`)
 - **Target:** `is_desktop_android = true`, `target_cpu = "arm64"`
-- **Size:** 27 patches, 643 insertions across 42 files
+- **Size:** 28 patches, 646 insertions across 44 files
 
 ## What you get
 
@@ -87,12 +87,13 @@ without forking anything.
 | 0025 | Turn off the AI Mode omnibox button | An AI entry point in the omnibox, on by default |
 | 0026 | Hide the shortcuts row and NTP cards by default | Both already had toggles; only the starting state changed |
 | 0027 | Lower the search box into thumb reach | Sits around 40% down the page rather than near the top |
+| 0028 | Move the tab switcher toolbar to the bottom | Its buttons stayed at the top while the browsing toolbar sits at the bottom |
 
 Patches 0001 and 0002 are bug fixes that happen to be prerequisites. 0003 is a usability fix.
 0004 through 0010 are the de-Googling, as are 0014 through 0021. 0011 through 0013 fix
 fullscreen video behaviour. 0022 and 0023 add the external download manager option. 0024
-through 0027 are usability changes: the Web Store, the AI Mode button, and what the new tab
-page shows by default.
+through 0028 are usability changes: the Web Store, the AI Mode button, what the new tab page
+shows by default, and where the toolbars sit.
 
 Sign-in has no single gate in Chromium. Patches 0009, 0010, 0015, 0016 and 0020 each remove a
 different entry point — the settings row, the "You and Google" section, the first-run screen,

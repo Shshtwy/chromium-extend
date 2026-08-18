@@ -1,0 +1,64 @@
+From 859da30cb6372947643f8b3470059647df1ba36e Mon Sep 17 00:00:00 2001
+From: Chromium Extend <noreply@localhost>
+Date: Tue, 18 Aug 2026 04:23:14 +0000
+Subject: [PATCH 28/28] Move the tab switcher toolbar to the bottom
+
+The tab switcher kept its new tab and menu buttons at the top while the browsing
+toolbar sits at the bottom, so the two modes disagreed and the buttons were a
+long reach on a large phone.
+
+Chromium already implements a bottom toolbar for the hub, in
+HubBottomToolbarCoordinator and HubBottomBarBottomToolbarDelegateImpl, but
+HubBottomToolbarDelegateFactory gates it behind two checks that are both off by
+default: the ANDROID_BOTTOM_BAR feature, disabled on both the native and Java
+side, and its show_bottom_bar_on_gts parameter. Enabling all three is enough; no
+layout changes were needed.
+
+The tab, grid and history control stays at the top. Only the new tab and menu
+buttons move down, which is what makes the two modes agree.
+
+Verified on device: no crashes, and the Ask Gemini button removed in patch 0019
+does not return, which was the risk in enabling this subsystem.
+---
+ chrome/browser/flags/android/chrome_feature_list.cc           | 2 +-
+ .../org/chromium/chrome/browser/flags/ChromeFeatureList.java  | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/chrome/browser/flags/android/chrome_feature_list.cc b/chrome/browser/flags/android/chrome_feature_list.cc
+index 0b99265877..f47ccb7573 100644
+--- a/chrome/browser/flags/android/chrome_feature_list.cc
++++ b/chrome/browser/flags/android/chrome_feature_list.cc
+@@ -621,7 +621,7 @@ BASE_FEATURE(kAndroidActorTaskTimeout, base::FEATURE_ENABLED_BY_DEFAULT);
+ BASE_FEATURE(kAndroidAppIntegrationMultiDataSource, base::FEATURE_ENABLED_BY_DEFAULT);
+ BASE_FEATURE(kAndroidAppRatingPrompt, base::FEATURE_DISABLED_BY_DEFAULT);
+ BASE_FEATURE(kAndroidAtomsLogging, base::FEATURE_DISABLED_BY_DEFAULT);
+-BASE_FEATURE(kAndroidBottomBar, base::FEATURE_DISABLED_BY_DEFAULT);
++BASE_FEATURE(kAndroidBottomBar, base::FEATURE_ENABLED_BY_DEFAULT);
+ BASE_FEATURE(kAndroidBottomBarAim, base::FEATURE_DISABLED_BY_DEFAULT);
+ BASE_FEATURE(kAndroidBricksNativePage, base::FEATURE_DISABLED_BY_DEFAULT);
+ BASE_FEATURE(kAndroidContextMenuDisabledMenuItems, base::FEATURE_DISABLED_BY_DEFAULT);
+diff --git a/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java b/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java
+index 8a7683ef7d..11cab7259b 100644
+--- a/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java
++++ b/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java
+@@ -801,7 +801,7 @@ public abstract class ChromeFeatureList {
+     public static final CachedFlag sAndroidAutoMintedTwa =
+             newCachedFlag(ANDROID_AUTO_MINTED_TWA, false);
+     public static final CachedFlag sAndroidBottomBar =
+-            newCachedFlag(ANDROID_BOTTOM_BAR, false, /* defaultValueInTests= */ true);
++            newCachedFlag(ANDROID_BOTTOM_BAR, true, /* defaultValueInTests= */ true);
+     public static final CachedFlag sAndroidBottomBarAim =
+             newCachedFlag(ANDROID_BOTTOM_BAR_AIM, false);
+     public static final CachedFlag sAndroidElegantTextHeight =
+@@ -1692,7 +1692,7 @@ public abstract class ChromeFeatureList {
+     public static final BooleanCachedFeatureParam sAndroidBottomBarNtpScrollOffEnabled =
+             newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "ntp_scroll_off_enabled", true);
+     public static final BooleanCachedFeatureParam sAndroidBottomBarShowBottomBarOnGts =
+-            newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "show_bottom_bar_on_gts", false);
++            newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "show_bottom_bar_on_gts", true);
+     public static final BooleanCachedFeatureParam sAndroidBottomBarShowGlicSettingToggle =
+             newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "show_glic_setting_toggle", false);
+     public static final BooleanCachedFeatureParam sAndroidBottomBarShowUpdateBadge =
+-- 
+2.34.1
+

@@ -1,7 +1,7 @@
 From bfb00d782b02a31d6f395d48ac4ba0193e94933d Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Sun, 16 Aug 2026 08:07:02 +0000
-Subject: [PATCH 18/27] Never offer the web app restore promo
+Subject: [PATCH 18/28] Never offer the web app restore promo
 
 The sheet restores apps used on devices connected to a Google account, so it can
 never have anything to offer in this build.
