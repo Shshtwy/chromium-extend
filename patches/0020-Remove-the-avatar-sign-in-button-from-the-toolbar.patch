@@ -1,7 +1,7 @@
 From addf7ea738184df933d4a814bfe91a7e1f4a1a4f Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Sun, 16 Aug 2026 08:19:47 +0000
-Subject: [PATCH 20/31] Remove the avatar sign-in button from the toolbar
+Subject: [PATCH 20/33] Remove the avatar sign-in button from the toolbar
 
 The button sits on every new tab page and describes itself as "Signed out. Opens
 options to sign in.", so it is a dead end in a build where signing in is

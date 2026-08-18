@@ -1,7 +1,7 @@
 From 527e3635a4f987d6fb9caadb9fef759f1e15fab5 Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Tue, 18 Aug 2026 04:04:04 +0000
-Subject: [PATCH 27/31] Lower the new tab page search box into thumb reach
+Subject: [PATCH 27/33] Lower the new tab page search box into thumb reach
 
 The search box sat near the top because the shortcuts row and cards below it
 used to fill the page. With those hidden by default it is a long reach on a

@@ -1,7 +1,7 @@
 From 98003010d04455547f168095d906ac82aafae583 Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Sun, 16 Aug 2026 04:43:41 +0000
-Subject: [PATCH 12/31] Draw fullscreen content into the display cutout by
+Subject: [PATCH 12/33] Draw fullscreen content into the display cutout by
  default
 
 computeDisplayCutoutMode() honours an explicit viewport-fit of cover or
