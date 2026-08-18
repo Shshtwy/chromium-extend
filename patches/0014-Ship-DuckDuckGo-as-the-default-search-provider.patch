@@ -1,7 +1,7 @@
 From e6df910bcf78b682b9cb0e6fee214c28158e4b66 Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Sun, 16 Aug 2026 05:31:52 +0000
-Subject: [PATCH 14/37] Ship DuckDuckGo as the default search provider
+Subject: [PATCH 14/42] Ship DuckDuckGo as the default search provider
 
 GetPrepopulatedFallbackSearch passed google.id, and the lookup matches on
 prepopulate id rather than on position, so the default was Google wherever it

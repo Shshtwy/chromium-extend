@@ -1,7 +1,7 @@
 From 842d6039e0cb977b64b1601340881e7382ec551c Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Tue, 18 Aug 2026 17:30:50 +0000
-Subject: [PATCH 36/37] Remove the built-in Gemini and AI Mode search shortcuts
+Subject: [PATCH 36/42] Remove the built-in Gemini and AI Mode search shortcuts
 
 The starter pack shipped six built-in shortcuts, and two of them pointed at Google AI.
 @gemini searched gemini.google.com and @aimode searched google.com with udm=50, the AI

@@ -1,7 +1,7 @@
 From 7cc6c6053f582faed100c1acb0246c23ccc17171 Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Tue, 18 Aug 2026 06:38:41 +0000
-Subject: [PATCH 30/37] Add an incognito toggle to the bottom bar
+Subject: [PATCH 30/42] Add an incognito toggle to the bottom bar
 
 Restores the fifth bottom bar button. The slot held Ask Gemini until patch 0019
 emptied it, which left four buttons and an unbalanced layout. Incognito is a

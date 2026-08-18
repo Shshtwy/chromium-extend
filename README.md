@@ -7,7 +7,7 @@ Built and used on a Pixel 10 Pro XL. Not affiliated with Google or the Chromium 
 
 - **Base:** Chromium `153.0.7999.0` (commit `945b5115`)
 - **Target:** `is_desktop_android = true`, `target_cpu = "arm64"`
-- **Size:** 37 patches, 970 insertions across 58 files
+- **Size:** 42 patches, 1338 insertions across 82 files
 
 ## What you get
 
@@ -107,6 +107,11 @@ without forking anything.
 | 0035 | Let the user add their own search engine | Chromium's add-engine screen existed but was switched off on Android |
 | 0036 | Remove the built-in Gemini and AI Mode shortcuts | @gemini and @aimode shipped as search shortcuts pointing at Google |
 | 0037 | Round the search engine icon in the omnibox | The rounding provider was built and updated but never attached to the view |
+| 0038 | Rename the browser to Bare | Launcher, widgets, About page and the menu description |
+| 0039 | Use the Bare icon | Legacy, adaptive and monochrome variants in every density |
+| 0040 | Stop badging settings rows as new | "New" appeared beside Address bar and Appearance on every fresh profile |
+| 0041 | Skip the first run experience | It opened a second Activity that only showed a spinner |
+| 0042 | Add the Bare welcome screen | One-time welcome layered over the browser, not its own Activity |
 
 Patches 0001 and 0002 are bug fixes that happen to be prerequisites. 0003 is a usability fix.
 0004 through 0010 are the de-Googling, as are 0014 through 0021. 0011 through 0013 fix
@@ -132,7 +137,14 @@ enable_glic_internal_resources = false # Gemini-in-Chrome surface
 enable_reporting = false               # Reporting API / Network Error Logging
 enable_service_discovery = false       # local device discovery
 enable_mdns = false                    # mDNS
+
+chrome_public_manifest_package = "org.barebrowser"  # application id
 ```
+
+The application id is a build argument rather than a patch, because upstream already exposes
+it as one. Note that changing it means the app installs alongside an earlier build rather
+than upgrading it: Android identifies apps by package, so tabs, extensions and settings do
+not carry over.
 
 ### What is deliberately kept
 

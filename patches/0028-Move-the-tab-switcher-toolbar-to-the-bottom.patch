@@ -1,7 +1,7 @@
 From 859da30cb6372947643f8b3470059647df1ba36e Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Tue, 18 Aug 2026 04:23:14 +0000
-Subject: [PATCH 28/37] Move the tab switcher toolbar to the bottom
+Subject: [PATCH 28/42] Move the tab switcher toolbar to the bottom
 
 The tab switcher kept its new tab and menu buttons at the top while the browsing
 toolbar sits at the bottom, so the two modes disagreed and the buttons were a
