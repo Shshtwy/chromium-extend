@@ -1,7 +1,7 @@
 From 14b557061142305e0cdcde20f4d164887874744b Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Sun, 16 Aug 2026 17:29:29 +0000
-Subject: [PATCH 22/28] Offer downloads to an installed download manager
+Subject: [PATCH 22/29] Offer downloads to an installed download manager
 
 Adds a hook so a download can be handed to a separate app such as 1DM instead
 of being fetched by the browser.

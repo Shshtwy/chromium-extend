@@ -7,7 +7,7 @@ Built and used on a Pixel 10 Pro XL. Not affiliated with Google or the Chromium 
 
 - **Base:** Chromium `153.0.7999.0` (commit `945b5115`)
 - **Target:** `is_desktop_android = true`, `target_cpu = "arm64"`
-- **Size:** 28 patches, 646 insertions across 44 files
+- **Size:** 29 patches, 793 insertions across 44 files
 
 ## What you get
 
@@ -88,6 +88,7 @@ without forking anything.
 | 0026 | Hide the shortcuts row and NTP cards by default | Both already had toggles; only the starting state changed |
 | 0027 | Lower the search box into thumb reach | Sits around 40% down the page rather than near the top |
 | 0028 | Move the tab switcher toolbar to the bottom | Its buttons stayed at the top while the browsing toolbar sits at the bottom |
+| 0029 | Pick which download manager receives downloads | Lists installed handlers, or ask every time |
 
 Patches 0001 and 0002 are bug fixes that happen to be prerequisites. 0003 is a usability fix.
 0004 through 0010 are the de-Googling, as are 0014 through 0021. 0011 through 0013 fix

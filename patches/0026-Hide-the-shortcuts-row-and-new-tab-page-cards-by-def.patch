@@ -1,7 +1,7 @@
 From 7c3353e6bad4e9f0ea1ac37f5b2cdf63f6e14953 Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Tue, 18 Aug 2026 03:38:04 +0000
-Subject: [PATCH 26/28] Hide the shortcuts row and new tab page cards by
+Subject: [PATCH 26/29] Hide the shortcuts row and new tab page cards by
  default
 
 Both already have toggles under Customize new tab page, so this changes only
