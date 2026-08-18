@@ -1,7 +1,7 @@
 From a5901934207c9d82bcc729c1155e4ef80dface6c Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Mon, 17 Aug 2026 16:51:13 +0000
-Subject: [PATCH 24/24] Browse the Chrome Web Store as a desktop site
+Subject: [PATCH 24/27] Browse the Chrome Web Store as a desktop site
 
 The store serves a mobile layout to this browser, and that layout has no install
 button, so "Discover more extensions" leads to a page that cannot install

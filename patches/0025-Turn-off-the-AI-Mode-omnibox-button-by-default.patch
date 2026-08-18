@@ -1,0 +1,34 @@
+From 83391725b40685b69d896362e6cc0969c8cbdd84 Mon Sep 17 00:00:00 2001
+From: Chromium Extend <noreply@localhost>
+Date: Tue, 18 Aug 2026 03:38:03 +0000
+Subject: [PATCH 25/27] Turn off the AI Mode omnibox button by default
+
+The button is registered with a default of true, putting an AI entry point in
+the omnibox on every profile. This build removes Google AI surfaces elsewhere,
+so leaving this one on by default is inconsistent.
+
+Only the default changes. Where the omnibox context menu entry exists it can
+still be turned back on, and this is a separate surface from the bottom bar
+slot emptied in patch 0019.
+---
+ components/omnibox/browser/omnibox_prefs.cc | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/components/omnibox/browser/omnibox_prefs.cc b/components/omnibox/browser/omnibox_prefs.cc
+index c9f108fcfa..52778c5039 100644
+--- a/components/omnibox/browser/omnibox_prefs.cc
++++ b/components/omnibox/browser/omnibox_prefs.cc
+@@ -27,7 +27,9 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
+       kShowGoogleLensShortcut, true,
+       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+   registry->RegisterBooleanPref(
+-      kShowAiModeOmniboxButton, true,
++      // De-Googled build: the AI Mode omnibox button is off by default. Where the
++      // context menu entry exists, it can still be turned back on.
++      kShowAiModeOmniboxButton, false,
+       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+   registry->RegisterBooleanPref(
+       kShowSearchTools, true, user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+-- 
+2.34.1
+

@@ -7,7 +7,7 @@ Built and used on a Pixel 10 Pro XL. Not affiliated with Google or the Chromium 
 
 - **Base:** Chromium `153.0.7999.0` (commit `945b5115`)
 - **Target:** `is_desktop_android = true`, `target_cpu = "arm64"`
-- **Size:** 24 patches, 582 insertions across 37 files
+- **Size:** 27 patches, 643 insertions across 42 files
 
 ## What you get
 
@@ -84,11 +84,15 @@ without forking anything.
 | 0022 | Offer downloads to an installed download manager | Hands a download to an app such as 1DM instead of fetching it in the browser |
 | 0023 | Add a setting to choose the download manager | Settings → Downloads, off by default |
 | 0024 | Browse the Chrome Web Store as a desktop site | The mobile store has no install button, so extensions could not be installed |
+| 0025 | Turn off the AI Mode omnibox button | An AI entry point in the omnibox, on by default |
+| 0026 | Hide the shortcuts row and NTP cards by default | Both already had toggles; only the starting state changed |
+| 0027 | Lower the search box into thumb reach | Sits around 40% down the page rather than near the top |
 
 Patches 0001 and 0002 are bug fixes that happen to be prerequisites. 0003 is a usability fix.
 0004 through 0010 are the de-Googling, as are 0014 through 0021. 0011 through 0013 fix
-fullscreen video behaviour. 0022 and 0023 add the external download manager option — the only
-patches here that add a feature rather than remove or fix one.
+fullscreen video behaviour. 0022 and 0023 add the external download manager option. 0024
+through 0027 are usability changes: the Web Store, the AI Mode button, and what the new tab
+page shows by default.
 
 Sign-in has no single gate in Chromium. Patches 0009, 0010, 0015, 0016 and 0020 each remove a
 different entry point — the settings row, the "You and Google" section, the first-run screen,
@@ -249,8 +253,8 @@ available key system — but actual protected playback has not been exercised en
   first run. An existing profile has `kDefaultSearchProviderData` persisted and
   `DefaultSearchManager` prefers it, so upgrading over an older install keeps Google until you
   change it in Settings → Search engine.
-- **The New Tab Page still has an AI Mode button and Discover.** Its Google logo and the promo
-  cards are gone, but these two remain.
+- **The New Tab Page still has Discover.** The Google logo, the promo cards and the AI Mode
+  button are gone; Discover remains.
 - **External downloads lose your sign-in.** With "Use an external download manager" on, a file
   that requires you to be signed in will fail in the other app: the interception point in
   `ChromeDownloadManagerDelegate` carries no cookie. Passing credentials needs a different
