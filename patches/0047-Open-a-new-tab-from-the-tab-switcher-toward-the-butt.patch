@@ -1,7 +1,7 @@
 From 842f5323652f6566620aee8636d01d3030a04e4c Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Wed, 19 Aug 2026 02:05:56 +0000
-Subject: [PATCH 47/48] Open a new tab from the tab switcher toward the button
+Subject: [PATCH 47/49] Open a new tab from the tab switcher toward the button
  that was pressed
 
 Opening a tab from a page animated out of the bottom, matching the new tab button, while

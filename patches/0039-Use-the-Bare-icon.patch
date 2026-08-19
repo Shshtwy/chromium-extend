@@ -1,7 +1,7 @@
 From 56138eeacadd0c5ee5a192719cdf3baaa308de79 Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Tue, 18 Aug 2026 20:21:17 +0000
-Subject: [PATCH 39/48] Use the Bare icon
+Subject: [PATCH 39/49] Use the Bare icon
 
 Replaces the launcher icon in every density, plus the monochrome variant used by themed
 launchers.

@@ -10,7 +10,7 @@ Built and used on a Pixel 10 Pro XL. Not affiliated with Google or the Chromium 
 
 - **Base:** Chromium `153.0.7999.0` (commit `945b5115`)
 - **Target:** `is_desktop_android = true`, `target_cpu = "arm64"`
-- **Size:** 48 patches, 1998 insertions across 130 files
+- **Size:** 49 patches, 2064 insertions across 135 files
 
 ## What you get
 
@@ -121,6 +121,7 @@ patch series rather than a fork, so every change stays readable and reviewable.
 | 0046 | Use the installed password manager by default | And relabel the built-in option, which claimed to use your Google Account |
 | 0047 | Animate a new tab from the button that opened it | From the tab switcher it grew from the top corner, ignoring the bottom bar |
 | 0048 | Keep the search engine icon round in thumbnails | Outline clipping is skipped when a view is drawn into a software canvas |
+| 0049 | Add a Video autostart site setting | Chromium stored an autoplay setting nothing ever read |
 
 Patches 0001 and 0002 are bug fixes that happen to be prerequisites. 0003 is a usability fix.
 0004 through 0010 are the de-Googling, as are 0014 through 0021. 0011 through 0013 fix

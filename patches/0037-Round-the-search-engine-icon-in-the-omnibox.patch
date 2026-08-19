@@ -1,7 +1,7 @@
 From eaab93260fdea60e665f850af74c7a12710bb73e Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Tue, 18 Aug 2026 17:30:51 +0000
-Subject: [PATCH 37/48] Round the search engine icon in the omnibox
+Subject: [PATCH 37/49] Round the search engine icon in the omnibox
 
 The search engine icon is a square bitmap with a white background. The new tab page clipped
 it to a circle, the omnibox did not, so the icon changed shape when moving between the two.

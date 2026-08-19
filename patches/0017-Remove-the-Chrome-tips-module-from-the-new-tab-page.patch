@@ -1,7 +1,7 @@
 From 3240f62baa5f382b212b8970485e3c41afdcbb0c Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Sun, 16 Aug 2026 08:07:01 +0000
-Subject: [PATCH 17/48] Remove the Chrome tips module from the new tab page
+Subject: [PATCH 17/49] Remove the Chrome tips module from the new tab page
 
 registerTipModules now registers nothing, so the tips carousel never appears.
 

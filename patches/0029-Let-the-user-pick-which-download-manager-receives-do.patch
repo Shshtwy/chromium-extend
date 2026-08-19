@@ -1,7 +1,7 @@
 From 005de3da1755e596fdc8117414d4db844025a615 Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Tue, 18 Aug 2026 05:00:03 +0000
-Subject: [PATCH 29/48] Let the user pick which download manager receives
+Subject: [PATCH 29/49] Let the user pick which download manager receives
  downloads
 
 Settings, Downloads gains a Download manager app list: Ask every time, which

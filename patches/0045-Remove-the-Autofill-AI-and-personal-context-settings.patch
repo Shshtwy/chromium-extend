@@ -1,7 +1,7 @@
 From 3757f4dc236af5f7c5da9c69bbf8611557a1e351 Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Wed, 19 Aug 2026 01:39:45 +0000
-Subject: [PATCH 45/48] Remove the Autofill AI and personal context settings
+Subject: [PATCH 45/49] Remove the Autofill AI and personal context settings
 
 The autofill settings screen offered "Smarter form understanding", which is Autofill AI, and a
 personal context section wired to Google's context service. Its own description said the quiet

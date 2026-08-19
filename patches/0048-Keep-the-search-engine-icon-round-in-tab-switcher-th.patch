@@ -1,7 +1,7 @@
 From 325a5d64220a3c8a1bc4fbb88e0fd860e8888d62 Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Wed, 19 Aug 2026 02:05:57 +0000
-Subject: [PATCH 48/48] Keep the search engine icon round in tab switcher
+Subject: [PATCH 48/49] Keep the search engine icon round in tab switcher
  thumbnails
 
 The icon in the new tab page search box is round on the page and square in the tab switcher.

@@ -1,7 +1,7 @@
 From 98f0329140f272d9919a22d0585cbe488a702548 Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Sun, 16 Aug 2026 02:15:45 +0000
-Subject: [PATCH 10/48] Remove the You and Google section from settings
+Subject: [PATCH 10/49] Remove the You and Google section from settings
 
 The main settings screen opened with a You and Google section containing a Sign in row and a Google services entry. Neither can function in this build: sign-in requires Google API keys that are not compiled in, and Sync is not part of this build.
 
