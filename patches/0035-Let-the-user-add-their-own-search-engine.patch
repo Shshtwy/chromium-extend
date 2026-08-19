@@ -1,7 +1,7 @@
 From a992d4d2e6a14ecd362ee71beb35858ce8311eb6 Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Tue, 18 Aug 2026 17:11:31 +0000
-Subject: [PATCH 35/46] Let the user add their own search engine
+Subject: [PATCH 35/48] Let the user add their own search engine
 
 Android had no way to add a search engine by hand. That matters more here than upstream:
 the prepopulated engine list lives in third_party/search_engines_data, which is not tracked

@@ -1,7 +1,7 @@
 From 503322abae3c087bd80d1b3079f5b918744256ea Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Wed, 19 Aug 2026 01:39:44 +0000
-Subject: [PATCH 44/46] Rename the browser in the remaining Android strings
+Subject: [PATCH 44/48] Rename the browser in the remaining Android strings
 
 Patch 0038 renamed the launcher entry, widget titles, About page and menu description, and
 said at the time that it covered what was visible in the app. Using the build turned up plenty

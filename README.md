@@ -10,7 +10,7 @@ Built and used on a Pixel 10 Pro XL. Not affiliated with Google or the Chromium 
 
 - **Base:** Chromium `153.0.7999.0` (commit `945b5115`)
 - **Target:** `is_desktop_android = true`, `target_cpu = "arm64"`
-- **Size:** 46 patches, 1942 insertions across 128 files
+- **Size:** 48 patches, 1998 insertions across 130 files
 
 ## What you get
 
@@ -119,6 +119,8 @@ patch series rather than a fork, so every change stays readable and reviewable.
 | 0044 | Rename the browser in the remaining Android strings | 337 strings still said Chrome; Google's own products keep their names |
 | 0045 | Remove the Autofill AI and personal context settings | "Smarter form understanding" shared page URLs and content with Google |
 | 0046 | Use the installed password manager by default | And relabel the built-in option, which claimed to use your Google Account |
+| 0047 | Animate a new tab from the button that opened it | From the tab switcher it grew from the top corner, ignoring the bottom bar |
+| 0048 | Keep the search engine icon round in thumbnails | Outline clipping is skipped when a view is drawn into a software canvas |
 
 Patches 0001 and 0002 are bug fixes that happen to be prerequisites. 0003 is a usability fix.
 0004 through 0010 are the de-Googling, as are 0014 through 0021. 0011 through 0013 fix
@@ -131,7 +133,8 @@ own search engine. 0036 drops the built-in Google AI search shortcuts and 0037 f
 of the engine icon in the omnibox. 0038 through 0042 are the rebrand to Bare, and 0044 finishes
 the naming the first pass missed. 0043 adds background media playback. 0045 and 0046 continue
 the de-Googling in autofill: removing the AI sections, and defaulting to whichever password
-manager the user already has.
+manager the user already has. 0047 and 0048 are small visual fixes found by using the build:
+where a new tab animation starts, and an icon that was clipped round rather than drawn round.
 
 Sign-in has no single gate in Chromium. Patches 0009, 0010, 0015, 0016 and 0020 each remove a
 different entry point — the settings row, the "You and Google" section, the first-run screen,

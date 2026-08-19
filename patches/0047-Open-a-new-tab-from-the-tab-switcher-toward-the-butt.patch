@@ -1,0 +1,82 @@
+From 842f5323652f6566620aee8636d01d3030a04e4c Mon Sep 17 00:00:00 2001
+From: Chromium Extend <noreply@localhost>
+Date: Wed, 19 Aug 2026 02:05:56 +0000
+Subject: [PATCH 47/48] Open a new tab from the tab switcher toward the button
+ that was pressed
+
+Opening a tab from a page animated out of the bottom, matching the new tab button, while
+doing the same thing from the tab switcher grew it from the top left corner instead.
+
+Two different paths decide this. NewTabAnimationLayout, used from a page, works out where the
+animation should start and already asks for a bottom origin when the bottom bar is on.
+HubLayout, used by the tab switcher, passed RectStart.TOP unconditionally. Upstream notes this
+in a TODO above the call: the origin defaults to the top of the pane host view rather than
+following whatever was clicked.
+
+HubLayout now makes the same distinction, so both look alike. The adjustment that stops the
+origin corner blinking follows the origin as well, extending the bottom edge rather than the
+top when the animation starts from below.
+---
+ .../chrome/browser/hub/HubLayout.java         | 34 ++++++++++++++-----
+ 1 file changed, 26 insertions(+), 8 deletions(-)
+
+diff --git a/chrome/android/java/src/org/chromium/chrome/browser/hub/HubLayout.java b/chrome/android/java/src/org/chromium/chrome/browser/hub/HubLayout.java
+index a18f1f9d12..56efd6e103 100644
+--- a/chrome/android/java/src/org/chromium/chrome/browser/hub/HubLayout.java
++++ b/chrome/android/java/src/org/chromium/chrome/browser/hub/HubLayout.java
+@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+ import org.chromium.chrome.browser.layouts.LayoutType;
+ import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
+ import org.chromium.chrome.browser.tab.Tab;
++import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
+ import org.chromium.chrome.browser.tab.TabHidingType;
+ import org.chromium.chrome.browser.tab.TabId;
+ import org.chromium.chrome.browser.tab.TabSelectionType;
+@@ -586,19 +587,36 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
+         getFinalRectForNewTabAnimation(containerView, newIsIncognito, finalRect);
+         Rect initialRect;
+         int cornerRadius;
+-        // Without this code, the upper corner shows a bit of blinking when running the
++
++        // Bare Browser: start the animation from wherever the new tab button actually is.
++        //
++        // The TODO above notes that this defaults to the top of the pane host view. With the
++        // bottom bar the new tab button sits at the bottom, so a tab opened from the tab
++        // switcher grew out of the opposite corner from the button that was pressed, while the
++        // same action from a page animated correctly. NewTabAnimationLayout already makes this
++        // distinction for the in-page case; this matches it so both look the same.
++        @NewTabAnimationUtils.RectStart
++        int rectStart =
++                BottomBarConfigUtils.isBottomBarEnabled(getContext())
++                        ? NewTabAnimationUtils.RectStart.BOTTOM_CENTER
++                        : NewTabAnimationUtils.RectStart.TOP;
++
++        // Without this code, the origin corner shows a bit of blinking when running the
+         // animation. This ensures the {@link ShrinkExpandImageView} fully covers the origin
+-        // corner.
+-        if (isRtl) {
+-            finalRect.right += 1;
++        // corner, whichever edge it starts from.
++        if (rectStart == NewTabAnimationUtils.RectStart.TOP) {
++            if (isRtl) {
++                finalRect.right += 1;
++            } else {
++                finalRect.left -= 1;
++            }
++            finalRect.top -= 1;
+         } else {
+-            finalRect.left -= 1;
++            finalRect.bottom += 1;
+         }
+-        finalRect.top -= 1;
+ 
+         initialRect = new Rect();
+-        NewTabAnimationUtils.updateRects(
+-                NewTabAnimationUtils.RectStart.TOP, isRtl, initialRect, finalRect);
++        NewTabAnimationUtils.updateRects(rectStart, isRtl, initialRect, finalRect);
+         cornerRadius =
+                 getContext()
+                         .getResources()
+-- 
+2.34.1
+

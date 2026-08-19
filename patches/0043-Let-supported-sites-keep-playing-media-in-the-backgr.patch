@@ -1,7 +1,7 @@
 From 704ec74f3fe2853fba74b5987090daea6b58adaf Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Wed, 19 Aug 2026 01:39:43 +0000
-Subject: [PATCH 43/46] Let supported sites keep playing media in the
+Subject: [PATCH 43/48] Let supported sites keep playing media in the
  background
 
 Adds Settings > Media > Background media playback, off by default. When it is on, a
