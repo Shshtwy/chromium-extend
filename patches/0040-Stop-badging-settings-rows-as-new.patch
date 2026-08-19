@@ -1,7 +1,7 @@
 From ea012c26cf50c2e37104ec4ef6dfdf1c65a07fa3 Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Tue, 18 Aug 2026 20:21:18 +0000
-Subject: [PATCH 40/42] Stop badging settings rows as new
+Subject: [PATCH 40/46] Stop badging settings rows as new
 
 Upstream superscripts "New" beside a recently added preference for its first few views,
 counted per preference. Address bar and Appearance both carry it, so a fresh profile always

@@ -10,7 +10,7 @@ Built and used on a Pixel 10 Pro XL. Not affiliated with Google or the Chromium 
 
 - **Base:** Chromium `153.0.7999.0` (commit `945b5115`)
 - **Target:** `is_desktop_android = true`, `target_cpu = "arm64"`
-- **Size:** 42 patches, 1338 insertions across 82 files
+- **Size:** 46 patches, 1942 insertions across 128 files
 
 ## What you get
 
@@ -115,6 +115,10 @@ patch series rather than a fork, so every change stays readable and reviewable.
 | 0040 | Stop badging settings rows as new | "New" appeared beside Address bar and Appearance on every fresh profile |
 | 0041 | Skip the first run experience | It opened a second Activity that only showed a spinner |
 | 0042 | Add the Bare welcome screen | One-time welcome layered over the browser, not its own Activity |
+| 0043 | Let supported sites keep playing media in the background | Opt-in, off by default; the page is told it is still visible so it does not pause itself |
+| 0044 | Rename the browser in the remaining Android strings | 337 strings still said Chrome; Google's own products keep their names |
+| 0045 | Remove the Autofill AI and personal context settings | "Smarter form understanding" shared page URLs and content with Google |
+| 0046 | Use the installed password manager by default | And relabel the built-in option, which claimed to use your Google Account |
 
 Patches 0001 and 0002 are bug fixes that happen to be prerequisites. 0003 is a usability fix.
 0004 through 0010 are the de-Googling, as are 0014 through 0021. 0011 through 0013 fix
@@ -124,7 +128,10 @@ shows by default, and where the toolbars sit. 0029 through 0033 continue in that
 the download manager, the incognito toggle, clearer wording in settings, where the search box
 sits, the white flash on a dark theme, which shortcut the toolbar starts with, and adding your
 own search engine. 0036 drops the built-in Google AI search shortcuts and 0037 fixes the shape
-of the engine icon in the omnibox.
+of the engine icon in the omnibox. 0038 through 0042 are the rebrand to Bare, and 0044 finishes
+the naming the first pass missed. 0043 adds background media playback. 0045 and 0046 continue
+the de-Googling in autofill: removing the AI sections, and defaulting to whichever password
+manager the user already has.
 
 Sign-in has no single gate in Chromium. Patches 0009, 0010, 0015, 0016 and 0020 each remove a
 different entry point — the settings row, the "You and Google" section, the first-run screen,

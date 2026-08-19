@@ -1,7 +1,7 @@
 From 4d64e50a91d80f33b5888e754f4bfac7140191fa Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Tue, 18 Aug 2026 20:21:19 +0000
-Subject: [PATCH 41/42] Skip the first run experience
+Subject: [PATCH 41/46] Skip the first run experience
 
 The first launch after install went through FirstRunActivity before reaching the browser.
 It drew an icon and a spinner for a moment, then handed off, so the first launch played two
