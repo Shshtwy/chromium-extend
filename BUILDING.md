@@ -25,6 +25,20 @@ the build environment, and the docs are tracked. Build output and APKs stay loca
 Files that need to cross between Linux and macOS go through `exchange/`. Chromium source must
 remain in the Linux volume because building from a macOS bind mount is unreliable and slow.
 
+## Bundled extensions
+
+uBlock Origin ships inside the apk, but its `.crx` is kept out of the patch
+series: it is a 4MB signed third party binary and base64 in a patch would be
+unreviewable. Copy it into the Chromium tree before building:
+
+```
+cp third_party/ublock_origin/uBlockOrigin-1.73.0.crx \
+   $CHROMIUM_SRC/chrome/browser/resources/bare/ublock_origin.crx
+```
+
+Without it the assets target has no input and the build fails at packaging.
+See `third_party/ublock_origin/README.md` for provenance, checksum and licence.
+
 ## Storage guardrail
 
 Chromium officially requires at least 100 GB free. Check `./builder.sh status` before checkout and
