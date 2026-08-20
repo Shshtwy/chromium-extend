@@ -14,9 +14,15 @@
 
 ---
 
-**A browser with the extras taken out.** Bare is a patch series on **Chromium Desktop
-Android** that removes Google tracking, telemetry and AI integration while keeping browser
-extensions and video playback working.
+Bare is a de-Googled Chromium build for Android, designed to give you more privacy, control and
+freedom on the web. It strips Google tracking, telemetry and AI integration while keeping
+powerful features like browser extensions and uBlock Origin. Bare also adds background video
+playback, the ability to save media from sites that normally block it, support for choosing your
+preferred download manager, and much more.
+
+It is a patch series rather than a fork: 68 patches against one pinned revision of **Chromium
+Desktop Android**, so what this repository holds is exactly the difference between stock Chromium
+and Bare, and nothing else.
 
 Built and used on a Pixel 10 Pro XL. Not affiliated with Google or the Chromium project.
 
