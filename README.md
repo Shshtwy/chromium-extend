@@ -309,6 +309,15 @@ sends no usage metrics, no URL-keyed metrics and no crash reports, because upstr
 those endpoints from forks. Translate is likewise disabled without a Google API key. Details and
 evidence are in [docs/stage-1-2.md](docs/stage-1-2.md).
 
+## Supporting Bare
+
+Bare is one person and one phone. There is no company behind it, nothing in the browser sells
+you anything, and there is nothing to upsell you to later, which is rather the point of it.
+
+If it is useful to you, you can [buy me a coffee](https://buymeacoffee.com/sheshtawy). Entirely
+optional. It buys build hours and a second device to test on, and it changes nothing about the
+browser either way.
+
 ## Repository layout
 
 ```
