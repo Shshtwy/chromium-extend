@@ -89,11 +89,11 @@ you tap sign-in. Both are fixed.
 | | |
 | --- | --- |
 | <img src="assets/screenshots/Screenshot_02.png" width="260"> | <img src="assets/screenshots/Screenshot_03.png" width="260"> |
-| **It asks before it assumes.** The welcome screen sets your search engine, ad blocker, address bar position and download handling up front, and nothing loads until you choose. | **A new tab with nothing on it.** No Google logo, no Discover feed, no promo cards. The search box is whichever engine you picked. |
+| Screenshot 1 | Screenshot 2 |
 | <img src="assets/screenshots/Screenshot_04.png" width="260"> | <img src="assets/screenshots/Screenshot_05.png" width="260"> |
-| **uBlock Origin, the full version.** Not Lite. The dashboard, the element picker and the counts all work, because Bare keeps Manifest V2 alive. | **Save an image anywhere.** Sites that cover their images with an invisible layer normally defeat the long press. Here it still finds the image. |
+| Screenshot 3 | Screenshot 4 |
 | <img src="assets/screenshots/Screenshot_06.png" width="260"> | <img src="assets/screenshots/Screenshot_07.png" width="260"> |
-| **Download video a page only streams.** The element points at a blob with no file behind it, so a browser normally offers nothing. Bare offers the file the page actually fetched. | **Straight to your downloads.** The real file, at full size, through the ordinary download path and your external download manager if you use one. |
+| Screenshot 5 | Screenshot 6 |
 
 ## Why
 
