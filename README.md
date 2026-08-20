@@ -8,7 +8,7 @@
 
 **Extensions. Privacy. Freedom**
 
-[barebrowser.org](https://barebrowser.org) · installs as `org.barebrowser`
+[barebrowser.org](https://barebrowser.org)
 
 </div>
 
@@ -33,56 +33,26 @@ Built and used on a Pixel 10 Pro XL. Not affiliated with Google or the Chromium 
 
 ## What you get
 
-**🧩 Real browser extensions on your phone.** Password managers, ad blockers, dark mode — the same
-extensions you'd use on a desktop. Tap an extension's icon and its window opens properly, and you
-can pin the ones you use most to the toolbar.
-
-**🚫 uBlock Origin, already installed.** The full version, not Lite. Full uBO needs Manifest V2,
-which Chrome has removed and Bare keeps working, so the filter lists and the element picker all
-do what they do on a desktop. It is not pinned and you can disable or remove it like anything
-else you installed yourself.
-
-**⬇️ Save the media a page is playing.** Long press an audio player or a video and Bare offers to
-download it. That includes sites that stream video in pieces rather than linking to a file, where
-a browser normally offers nothing at all, because Bare remembers what the page fetched. Downloads
-go out through the ordinary download path, external download manager included.
-
-**🔗 Links open in the browser, not in apps.** Tapping a Reddit or YouTube result keeps you in the
-browser instead of throwing you into their app mid-read. Phone numbers and email links still open
-the right app, as they should.
-
-**📵 De-Googled!** No background check-ins to Google, and nothing about the forms you fill in gets
-sent off for analysis. Google's built-in AI features are removed entirely, not just switched off.
-
-**🦆 DuckDuckGo out of the box.** The shipped default on a new profile, not something you have to
-go and change. The new tab page follows it, so the Google logo is gone too.
-
-**🧹 No dead Google UI.** Settings opens straight to what you can actually change — no sign-in
-prompts, no Google services page, no password manager row that only says it stopped working. No
-first-run sign-in screen either: it opens straight to a new tab.
-
-**🎬 Video still works, and fullscreen behaves.** Ordinary video plays, and the proprietary codecs
-that usually go missing from a privacy-focused build are present. Protected streaming is the one
-thing not proven: Widevine is detected, but paid playback has not been exercised end to end, so
-treat Netflix and the like as untested rather than working. Fullscreen
-respects your rotation lock instead of forcing landscape, and fills the screen properly rather than
-sitting off-centre next to the camera cutout.
-
-**🌙 Dark stays dark.** On a dark theme, loading a page used to flash white first, which is
-glaring on an OLED screen at night. Three separate parts of the browser defaulted to white before
-a page painted; all three now follow your theme. There is also a setting to have Bare darken
-light sites itself, off by default.
-
-**🔎 Add your own search engine.** Chromium ships an add-engine screen on Android but leaves it
-switched off. It is on here, under Settings > Search engine > Manage search engines and site
-search: give it a name, a keyword and a URL, then make it your default. Handy for front ends
-like noai.duckduckgo.com that no browser lists by default.
-
-**🛡️ Still safe to browse.** Protections against fake certificates and downgraded connections are
-deliberately kept. Privacy here doesn't come at the cost of security.
-
-**🐛 Two crashes fixed.** The stock build crashes when you open an extension's window, and again if
-you tap sign-in. Both are fixed.
+- **Real browser extensions.** Bitwarden, Dark Reader, uBlock Origin: the desktop ones, on your
+  phone. Pin the ones you use to the toolbar.
+- **uBlock Origin, already installed.** The full version, not Lite, because Bare keeps Manifest
+  V2 working. Remove it like anything else if you would rather not have it.
+- **No Google in the loop.** No background check-ins, no telemetry, no AI features, no sign-in
+  prompts anywhere. DuckDuckGo is the default from first launch.
+- **Save what a page is playing.** Long press a video or an audio player and Bare offers you the
+  file, including on sites that stream in pieces and normally offer nothing at all.
+- **Video keeps playing in the background.** Lock the phone or switch apps and the audio carries
+  on, for sites that support it.
+- **Your download manager, if you want one.** Hand downloads to 1DM or similar instead of the
+  browser, or leave it off and keep them in Bare.
+- **Links open in the browser, not in apps.** A Reddit or YouTube result stays where you are.
+  Phone numbers and email links still open the right app.
+- **Video that behaves.** H.264 and AAC are included. Fullscreen follows your rotation lock
+  instead of forcing landscape, and clears the camera cutout instead of sitting beside it.
+- **Dark stays dark.** No white flash while a page loads on a dark theme. There is also an
+  optional setting to have Bare darken light sites itself.
+- **Add your own search engine.** Chromium ships the add-engine screen on Android but leaves it
+  switched off. It is on here, under Settings, Search engine, Manage search engines.
 
 ## Screenshots
 
