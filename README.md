@@ -285,6 +285,9 @@ them. [What has been measured, and what has not](docs/reproducibility.md).
   are, and a lone `.ts` or `.m4s` segment is not playable on its own, so both are refused rather
   than handed over as a download that would disappoint. Assembling a segmented stream is the same
   missing job as above.
+- **This is not a YouTube downloader.** YouTube keeps audio and video in separate streams and
+  asks for them in ranges Bare does not reassemble, so it will not produce a usable file there.
+  [Seal](https://github.com/JunkFood02/Seal), a yt-dlp front end, is the right tool for that.
 - **On a site that never reloads, the offered video may be one you scrolled past.** Feeds navigate
   without loading a new document, so what the tab fetched accumulates, and Bare offers whichever
   video it pulled the most of. Usually that is the one you watched. Not always.
