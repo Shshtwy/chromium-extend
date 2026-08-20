@@ -1,16 +1,28 @@
-# Bare <img src="assets/logo_bare_blend.svg" width="52" align="right" alt="">
+<div align="center">
+
+<img src="assets/logo_bare_blend.png" width="132" alt="">
+
+# Bare Browser
+
+**Shaped by the community**
+
+**Extensions. Privacy. Freedom**
+
+[barebrowser.org](https://barebrowser.org) · installs as `org.barebrowser`
+
+</div>
+
+---
 
 **A browser with the extras taken out.** Bare is a patch series on **Chromium Desktop
 Android** that removes Google tracking, telemetry and AI integration while keeping browser
 extensions and video playback working.
 
-[barebrowser.org](https://barebrowser.org) · installs as `org.barebrowser`
-
 Built and used on a Pixel 10 Pro XL. Not affiliated with Google or the Chromium project.
 
 - **Base:** Chromium `153.0.7999.0` (commit `945b5115`)
 - **Target:** `is_desktop_android = true`, `target_cpu = "arm64"`
-- **Version:** `1.0.0-alpha.1`, versionCode `801000001`, installs as `org.barebrowser`
+- **Version:** `1.0.0-alpha.1`, versionCode `801000001`
 - **Size:** 68 patches, 4741 insertions across 194 files
 
 ## What you get
@@ -70,10 +82,12 @@ you tap sign-in. Both are fixed.
 
 | | |
 | --- | --- |
-| <img src="assets/screenshots/01-browsing.png" width="260"> | <img src="assets/screenshots/02-extensions-menu.png" width="260"> |
-| **Extension icons in the toolbar.** Pinned extensions sit beside the address bar. | **The extensions menu on a phone.** Per-site permissions and *Pin to toolbar* — upstream only offers this at tablet widths. |
-| <img src="assets/screenshots/03-extension-popup.png" width="260"> | <img src="assets/screenshots/04-settings.png" width="260"> |
-| **An extension's own window.** Dark Reader running from the toolbar, exactly as on a desktop. | **Settings opens straight to Basics.** No sign-in row, no Google services page. |
+| <img src="assets/screenshots/Screenshot_02.png" width="260"> | <img src="assets/screenshots/Screenshot_03.png" width="260"> |
+| **It asks before it assumes.** The welcome screen sets your search engine, ad blocker, address bar position and download handling up front, and nothing loads until you choose. | **A new tab with nothing on it.** No Google logo, no Discover feed, no promo cards. The search box is whichever engine you picked. |
+| <img src="assets/screenshots/Screenshot_04.png" width="260"> | <img src="assets/screenshots/Screenshot_05.png" width="260"> |
+| **uBlock Origin, the full version.** Not Lite. The dashboard, the element picker and the counts all work, because Bare keeps Manifest V2 alive. | **Save an image anywhere.** Sites that cover their images with an invisible layer normally defeat the long press. Here it still finds the image. |
+| <img src="assets/screenshots/Screenshot_06.png" width="260"> | <img src="assets/screenshots/Screenshot_07.png" width="260"> |
+| **Download video a page only streams.** The element points at a blob with no file behind it, so a browser normally offers nothing. Bare offers the file the page actually fetched. | **Straight to your downloads.** The real file, at full size, through the ordinary download path and your external download manager if you use one. |
 
 ## Why
 
@@ -412,7 +426,10 @@ patches/            the patch series, applied in order
 docker/             container image definition
 docker-compose.yml  build environment
 builder.sh          container wrapper
-assets/             logo and screenshots used in this README
+assets/             logo and the screenshots used in this README
+tools/              version numbers, release signing, build comparison
+VERSION             Bare's version, independent of Chromium's
+third_party/        uBlock Origin as shipped, with its provenance
 docs/design.md      design decisions and rationale
 docs/stage-1-2.md   execution notes, diagnoses, and results
 ```
