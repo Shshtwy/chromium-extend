@@ -207,30 +207,108 @@ not carry over.
 Builds run in an x86-64 Ubuntu 22.04 container. On Apple Silicon this means Rosetta
 emulation, and a full build takes hours.
 
-## Quick start
+## Build it yourself
+
+Everything runs in the container. The Chromium checkout stays in its volume, because building
+from a macOS bind mount is slow and unreliable; only small files cross to the host, through
+`exchange/`, which is the one directory shared with the container.
+
+**1. Start the container.**
 
 ```bash
-./builder.sh build     # build the container image
-./builder.sh start     # start it
-./builder.sh shell     # get a shell inside
+./builder.sh build
+./builder.sh start
 ```
 
-Fetch a Chromium checkout at the base commit into the container's `/work/chromium/src`, then
-apply the series:
+**2. Put what the build needs where the container can see it.**
+
+```bash
+cp -R patches exchange/
+cp third_party/ublock_origin/uBlockOrigin-1.73.0.crx exchange/
+tools/version.py gn > exchange/version-args.gn
+```
+
+**3. Fetch Chromium.** Inside the container (`./builder.sh shell`). depot_tools is on the PATH
+but not installed, so clone it first. This part is Chromium's own procedure rather than
+anything specific to Bare — see the upstream [Android build
+instructions](https://chromium.googlesource.com/chromium/src/+/main/docs/android_build_instructions.md)
+if a step needs explaining. Expect hours and about 50 GB.
+
+```bash
+git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git ~/depot_tools
+mkdir -p /work/chromium && cd /work/chromium
+fetch --nohooks android
+cd src
+git checkout 945b5115
+gclient sync -D --force --reset
+./build/install-build-deps.sh --android
+```
+
+**4. Apply the series, and drop in the extension.** uBlock Origin is kept out of the patches
+because a 4 MB signed binary as base64 would be unreviewable, so it is copied in separately.
+Without it the build fails at packaging.
 
 ```bash
 git am /exchange/patches/*.patch
+mkdir -p chrome/browser/resources/bare
+cp /exchange/uBlockOrigin-1.73.0.crx chrome/browser/resources/bare/ublock_origin.crx
 ```
 
-Add the flags above to `out/<name>/args.gn` alongside your platform args, then:
+**5. Configure.** This is the complete configuration the published release was built with,
+nothing omitted:
+
+```gn
+target_os = "android"
+target_cpu = "arm64"
+is_desktop_android = true
+is_official_build = true
+is_debug = false
+is_java_debug = false
+is_component_build = false
+dcheck_always_on = false
+android_static_analysis = "off"
+symbol_level = 0
+blink_symbol_level = 0
+v8_symbol_level = 0
+use_remoteexec = false
+use_reclient = false
+
+proprietary_codecs = true
+ffmpeg_branding = "Chrome"
+
+use_mlkit_for_aicore = false
+enable_glic_internal_resources = false
+enable_reporting = false
+enable_service_discovery = false
+enable_mdns = false
+enable_arcore = false
+enable_cardboard = false
+enable_openxr = false
+
+chrome_public_manifest_package = "org.barebrowser"
+android_override_version_code = "801000001"
+android_override_version_name = "1.0.0-alpha.1"
+```
+
+The last two lines are what `tools/version.py gn` emits, and they matter: they are written into
+the manifest, so a build without them will not match the release.
 
 ```bash
-gn gen out/<name>
-autoninja -C out/<name> -j 12 chrome_public_apk
+mkdir -p out/Bare
+$EDITOR out/Bare/args.gn          # paste the block above
+gn gen out/Bare
+autoninja -C out/Bare chrome_public_apk
 ```
 
-See [BUILDING.md](BUILDING.md) for the full workflow, including how files move between the
-container and the host.
+**6. Compare.** Your APK will not be byte-identical to the published one, because that one
+carries a signature only its key can produce. Everything else should match:
+
+```bash
+tools/apk-content-hash.py out/Bare/apks/ChromePublic.apk Bare-1.0.0-alpha.1.apk
+```
+
+See [BUILDING.md](BUILDING.md) for the rest of the workflow, including versioning and how
+releases are signed.
 
 ## Verifying a build
 
@@ -264,17 +342,14 @@ which every build shares, so the APKs matched whole. They no longer do, and shou
 
 ### To verify a build yourself
 
-1. Check out Chromium at base commit `945b5115`
-2. Apply the series: `git am patches/*.patch`
-3. Use the `args.gn` shown above
-4. Append the version arguments: `tools/version.py gn >> out/<name>/args.gn`
-5. `gn gen out/<name> && autoninja -C out/<name> -j 12 chrome_public_apk`
-6. Compare against the release, ignoring who signed it:
+Follow [Build it yourself](#build-it-yourself) exactly, including the version arguments, then
+compare the result against the download:
 
-       tools/apk-content-hash.py out/<name>/apks/ChromePublic.apk Bare-1.0.0-alpha.1.apk
+```bash
+tools/apk-content-hash.py out/Bare/apks/ChromePublic.apk Bare-1.0.0-alpha.1.apk
+```
 
-A rebuild from the same commit should report identical contents. The version arguments matter:
-they are written into the manifest, so a build without them differs from the release.
+A rebuild from the same commit should report identical contents.
 
 ### What this does and does not prove
 
