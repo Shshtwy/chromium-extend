@@ -1,4 +1,4 @@
-# Bare <img src="assets/bare-logo.svg" width="52" align="right" alt="">
+# Bare <img src="assets/logo_bare_blend.svg" width="52" align="right" alt="">
 
 **A browser with the extras taken out.** Bare is a patch series on **Chromium Desktop
 Android** that removes Google tracking, telemetry and AI integration while keeping browser
@@ -10,7 +10,8 @@ Built and used on a Pixel 10 Pro XL. Not affiliated with Google or the Chromium 
 
 - **Base:** Chromium `153.0.7999.0` (commit `945b5115`)
 - **Target:** `is_desktop_android = true`, `target_cpu = "arm64"`
-- **Size:** 49 patches, 2064 insertions across 135 files
+- **Version:** `1.0.0-alpha.1`, versionCode `801000001`, installs as `org.barebrowser`
+- **Size:** 68 patches, 4741 insertions across 194 files
 
 ## What you get
 
@@ -207,8 +208,16 @@ container and the host.
 
 ## Verifying a build
 
-**The build is reproducible.** Building the same source twice produces a byte-identical APK, so
-you do not have to trust the published binary — you can rebuild it and compare.
+**The build is reproducible.** Building the same source twice produces an APK whose contents are
+identical byte for byte, so you do not have to trust the published binary — you can rebuild it
+and compare.
+
+One caveat, and it is the important one: releases are signed with Bare's own private key, so the
+published file as a whole is **not** something you can reproduce. Nobody but the holder of that
+key can produce that signature, which is the entire point of signing. What you can reproduce is
+everything the build actually produced, which is every byte except the signature.
+`tools/apk-content-hash.py` hashes exactly that, so two builds of the same source agree no matter
+who signed them.
 
 This was measured, not assumed. The same tree was built two ways:
 
@@ -221,20 +230,25 @@ Identical hashes, identical size, from a 6h15m clobber build against an incremen
 differing directory name matters: a build path leaking into a binary is the most common cause of
 irreproducibility, and Chromium's [deterministic build
 support](https://chromium.googlesource.com/chromium/src/+/main/docs/deterministic_builds.md)
-holds here. Two other things that usually break Android reproducibility are already handled
-upstream — every zip entry is stamped `2001-01-01 00:00` rather than build time, and the APK is
-signed with `build/android/chromium-debug.keystore`, which is checked into Chromium's tree and
-used by default, so signatures match too.
+holds here. Zip timestamps, the other usual cause, are already handled upstream: every entry is
+stamped `2001-01-01 00:00` rather than build time.
+
+That measurement was taken while builds were still signed with Chromium's checked-in debug key,
+which every build shares, so the APKs matched whole. They no longer do, and should not.
 
 ### To verify a build yourself
 
 1. Check out Chromium at base commit `945b5115`
 2. Apply the series: `git am patches/*.patch`
 3. Use the `args.gn` shown above
-4. `gn gen out/<name> && autoninja -C out/<name> -j 12 chrome_public_apk`
-5. `sha256sum out/<name>/apks/ChromePublic.apk`
+4. Append the version arguments: `tools/version.py gn >> out/<name>/args.gn`
+5. `gn gen out/<name> && autoninja -C out/<name> -j 12 chrome_public_apk`
+6. Compare against the release, ignoring who signed it:
 
-A rebuild from the same commit should give the same hash as a release built from that commit.
+       tools/apk-content-hash.py out/<name>/apks/ChromePublic.apk Bare-1.0.0-alpha.1.apk
+
+A rebuild from the same commit should report identical contents. The version arguments matter:
+they are written into the manifest, so a build without them differs from the release.
 
 ### What this does and does not prove
 
@@ -249,21 +263,36 @@ the output — but that link is untested here, and a reproducibility claim is th
 "most likely". If you rebuild on your own machine and get a different hash, please open an issue;
 that is the missing measurement.
 
+### Checking who signed a build
+
+Bare releases are signed with this certificate, and nothing else should be trusted as Bare:
+
+    SHA-256  ae:2a:0e:7f:b7:a1:32:ec:51:7d:26:a8:e7:c8:3d:27
+             5e:83:74:7b:0a:77:7d:4a:42:22:5b:1d:34:32:71:a0
+    subject  CN=Bare Browser, O=Bare Browser, OU=Release
+    key      RSA 4096
+
+    apksigner verify --print-certs Bare-1.0.0-alpha.1.apk
+
+**Releases before `v1.0.0-alpha.1` were signed with Chromium's debug key**, which is checked into
+Chromium's tree and therefore public. Anyone can build an APK that installs as an update over
+one of those. If you are running a Chromium Extend build, uninstall it rather than updating; a
+Bare release cannot replace it anyway, because the signing identity deliberately changed.
+
 ### Release hashes
 
-Published APKs are signed with the same checked-in debug key, so they are not unique to this
-machine.
+Each release publishes the SHA-256 of its APK. That confirms the file you fetched is the file
+that was uploaded, and nothing more: it is self-attested, so on its own it proves nothing about
+provenance. The rebuild comparison above is what does that, and the signing certificate is what
+ties a build to Bare.
 
-| Release | SHA-256 |
-| --- | --- |
-| v1.2 | `8fe506d5e89da5a8c4c8feff0e74d8151334ee820eccf1223ca4a044ddfb6d33` |
-| v1.4 | `e70364b58f215c3a390fe92622d844112462ea21a604da15e77ec40f3e082105` |
+| Release | Line | Signed with | SHA-256 |
+| --- | --- | --- | --- |
+| v1.2 | Chromium Extend | Chromium debug key | `8fe506d5e89da5a8c4c8feff0e74d8151334ee820eccf1223ca4a044ddfb6d33` |
+| v1.4 | Chromium Extend | Chromium debug key | `e70364b58f215c3a390fe92622d844112462ea21a604da15e77ec40f3e082105` |
 
-The v1.2 hash is published for download integrity — it confirms the file you fetched is the file
-that was uploaded. On its own it is self-attested and proves nothing about provenance; the
-rebuild above is what does that. v1.2 was built from the 21-patch tree, before the reproducibility
-test was run, so it has not itself been rebuilt and compared. Future releases will publish a hash
-verified against a clean rebuild.
+The Chromium Extend releases are left published as the line Bare grew out of. Their hashes are
+still good for checking a download, but their signatures mean nothing: the key is public.
 
 ## Status
 
@@ -365,12 +394,8 @@ The patches modify Chromium source and are therefore subject to Chromium's
 **BSD-3-Clause** license. See the
 [Chromium LICENSE](https://chromium.googlesource.com/chromium/src/+/main/LICENSE).
 
-`assets/bare-logo.svg` is the Bare mark and belongs to this project.
-
-`assets/chromium-logo.svg` is from
-[Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Chromium_Logo.svg), in the public
-domain under `PD-textlogo`. It is retained only to identify the upstream project these patches
-apply to, not to suggest endorsement.
+`assets/logo_bare_blend.svg` and `assets/logo_bare_blend.png` are the Bare mark and belong
+to this project.
 
 Chromium is a trademark of Google LLC. Bare is unaffiliated with Google or the Chromium
 project, and is not Chromium.

@@ -1,5 +1,5 @@
-Chromium Extend
-Copyright (c) 2026 Chromium Extend contributors
+Bare
+Copyright (c) 2026 Bare contributors
 
 This product includes modifications to Chromium source code.
 
@@ -10,6 +10,18 @@ https://chromium.googlesource.com/chromium/src/+/main/LICENSE
 
 The patch files under patches/ are derived from Chromium source and remain
 subject to that license.
+
+uBlock Origin
+Copyright (c) Raymond Hill and contributors
+Licensed under the GNU General Public License v3.0.
+https://github.com/gorhill/uBlock
+
+Bare redistributes uBlock Origin unmodified, as published by its author, inside
+the apk. It keeps its original extension id and its original signature, and the
+full licence text ships inside the extension. This is mere aggregation: uBlock
+Origin remains under the GPL and Bare's own licence is unaffected. Because the
+extension is unmodified, the corresponding source is the upstream release. See
+third_party/ublock_origin/README.md.
 
 Chromium is a trademark of Google LLC. This project is not affiliated with,
 endorsed by, or sponsored by Google LLC or the Chromium project.
