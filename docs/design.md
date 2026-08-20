@@ -1,4 +1,4 @@
-# De-Googled Chromium for Desktop Android — design
+# De-Googled Chromium for Desktop Android: design
 
 Date: 2026-08-14
 Status: approved (design), pending implementation plan
@@ -41,8 +41,8 @@ browser, not a distributable fork.
 ## Decisions
 
 1. **Chrome Web Store: keep install, remove the update pinger.** Extensions install normally.
-   The periodic background update check — which transmits installed extension IDs plus a client
-   ID on a timer — is stubbed. Updates happen by reinstalling on demand.
+   The periodic background update check, which transmits installed extension IDs plus a client
+   ID on a timer, is stubbed. Updates happen by reinstalling on demand.
 2. **Safe Browsing removed, component updater retained.** `safe_browsing_mode = 0`. Safe Browsing
    is already non-functional without an API key, so the outbound lookups are cost without benefit.
    The component updater stays so CRLSet certificate revocation data keeps refreshing. This leaves
@@ -67,8 +67,8 @@ holding one bad SwiftShader fetch from 2026-08-10; it is unrelated and can be ig
 
 `google_api_key = ""`, `use_official_google_api_keys = ""`, and
 `support_external_google_api_key = false`. `USE_OFFICIAL_GOOGLE_API_KEYS` is undefined and there is
-no runtime injection path. Every keyed Google service — Safe Browsing lookups, Translate,
-spellcheck, Autofill crowdsourcing, the variations seed — is already failing in the current APK.
+no runtime injection path. Every keyed Google service (Safe Browsing lookups, Translate,
+spellcheck, Autofill crowdsourcing, the variations seed) is already failing in the current APK.
 
 This reframes the work: most removals delete dead code and stop futile outbound attempts rather
 than sacrificing working functionality.
@@ -86,7 +86,7 @@ the durable artifact: reviewable, replayable against a fresh checkout, and rebas
 Chromium.
 
 Pristine copies under `phase2-staging/originals/` remain useful for the Phase 2 revert in Stage 1,
-but are superseded by patch files for new work — git already tracks the originals.
+but are superseded by patch files for new work, git already tracks the originals.
 
 This requires no git repository in the macOS project directory and no remote host.
 
@@ -105,20 +105,20 @@ wedging the machine.
 Each stage ends with a build, an install to the Pixel Fold, and the stated checkpoint. Stages are
 sequential; several touch overlapping files.
 
-### Stage 1 — Revert Phase 2
+### Stage 1: Revert Phase 2
 
 **Prerequisite completed 2026-08-14.** All retained work is committed to branch `local-patches`
 in the checkout, on top of base commit `945b5115`:
 
-- `7458900703` — Fix two Desktop Android crashes from the 2026-08-09 report
-- `1edd8e56d1` — Harden extensions menu against a missing toolbar coordinator
+- `7458900703`: Fix two Desktop Android crashes from the 2026-08-09 report
+- `1edd8e56d1`: Harden extensions menu against a missing toolbar coordinator
 
 One subtlety was resolved while committing: `components/signin/public/android/BUILD.gn` contained
 both Phase 2 source registrations and the Phase 1 `NullAccountManagerDelegateTest` registration.
 It was split so only the Phase 1 line is committed. A wholesale revert of that file would
 otherwise have silently dropped the crash-fix test.
 
-The working tree now contains Phase 2 and nothing else — 3 modified files, 3 untracked files,
+The working tree now contains Phase 2 and nothing else: 3 modified files, 3 untracked files,
 9 insertions and 1 deletion. The revert is therefore:
 
 ```
@@ -131,10 +131,10 @@ rm components/signin/public/android/junit/src/org/chromium/components/signin/And
 Checkpoint: `git status` is clean; builds clean; sign-in falls back to
 `NullAccountManagerDelegate`.
 
-### Stage 2 — GN flag tier
+### Stage 2: GN flag tier
 
-Split into two builds. `safe_browsing_mode = 0` is the highest-risk flag in the set — the Android
-path assumes mode 2 — so it goes first and alone, keeping any failure unambiguous.
+Split into two builds. `safe_browsing_mode = 0` is the highest-risk flag in the set, the Android
+path assumes mode 2, so it goes first and alone, keeping any failure unambiguous.
 
 **Stage 2a.** Append to `out/PixelFold/args.gn` and build:
 
@@ -171,7 +171,7 @@ enable_offline_pages = false
 
 Checkpoint: APK size drops measurably from the 467 MB baseline.
 
-### Stage 3 — Network patches
+### Stage 3: Network patches
 
 No GN flag exists for these; each needs a source edit. This is the bulk of the effort.
 
@@ -188,12 +188,12 @@ No GN flag exists for these; each needs a source edit. This is the bulk of the e
 | Network time queries | `components/network_time` |
 
 The Cromite and ungoogled-chromium patch sets are used as reference for call sites. They will not
-apply cleanly — both target conventional Chrome rather than `is_desktop_android` — but they
+apply cleanly, both target conventional Chrome rather than `is_desktop_android`, but they
 materially reduce the risk of missing a call site.
 
 Checkpoint: no unexpected outbound traffic under observation.
 
-### Stage 4 — Android manifest
+### Stage 4: Android manifest
 
 Remove from `chrome/android/java/AndroidManifest.xml` and supporting build files:
 
@@ -209,13 +209,13 @@ Sync.
 
 Checkpoint: manifest diff contains no `com.google.*` service registrations.
 
-### Stage 5 — UI removal
+### Stage 5: UI removal
 
 Delete entry points for sign-in, Sync, and Translate.
 
 Checkpoint: the 2026-08-09 Crash 2 reproduction steps no longer reach a sign-in action.
 
-### Stage 6 — Chrome Web Store update pinger
+### Stage 6: Chrome Web Store update pinger
 
 Stub the periodic extension update check while leaving the install path intact.
 

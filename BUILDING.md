@@ -2,7 +2,7 @@
 
 This project uses an x86-64 Ubuntu 22.04 container running locally through Docker Desktop.
 The Chromium checkout and build output live in the Docker volume `chromium-android-source`.
-The Chromium checkout itself is never pushed anywhere — only the patch series in `patches/`,
+The Chromium checkout itself is never pushed anywhere: only the patch series in `patches/`,
 the build environment, and the docs are tracked. Build output and APKs stay local.
 
 ## Matched snapshot

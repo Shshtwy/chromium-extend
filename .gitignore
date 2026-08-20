@@ -1,4 +1,4 @@
-# Build artifacts — APKs run ~465 MB each, far past GitHub's 100 MB file limit.
+# Build artifacts: APKs run ~465 MB each, far past GitHub's 100 MB file limit.
 *.apk
 *.apk.idsig
 *.aab
