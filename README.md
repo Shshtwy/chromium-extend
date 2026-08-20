@@ -312,18 +312,18 @@ evidence are in [docs/stage-1-2.md](docs/stage-1-2.md).
 ## Repository layout
 
 ```
-patches/            the patch series, applied in order
-docker/             container image definition
-docker-compose.yml  build environment
-builder.sh          container wrapper
-assets/             logo and the screenshots used in this README
-tools/              version numbers, release signing, build comparison
-VERSION             Bare's version, independent of Chromium's
-third_party/        uBlock Origin as shipped, with its provenance
-docs/patches.md     what every patch does
-docs/repro*.md      what rebuilding has and has not proven
-docs/design.md      design decisions and rationale
-docs/stage-1-2.md   execution notes, diagnoses, and results
+patches/                 the patch series, applied in order
+docker/                  container image definition
+docker-compose.yml       build environment
+builder.sh               container wrapper
+assets/                  logo and the screenshots used in this README
+tools/                   version numbers, release signing, build comparison
+VERSION                  Bare's version, independent of Chromium's
+third_party/             uBlock Origin as shipped, with its provenance
+docs/patches.md          what every patch does
+docs/reproducibility.md  what rebuilding has and has not proven
+docs/design.md           design decisions and rationale
+docs/stage-1-2.md        execution notes, diagnoses, and results
 ```
 
 The Chromium checkout, build output, and APKs are not tracked: they live in a Docker volume
