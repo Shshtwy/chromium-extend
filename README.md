@@ -310,14 +310,17 @@ sends no usage metrics, no URL-keyed metrics and no crash reports, because upstr
 those endpoints from forks. Translate is likewise disabled without a Google API key. Details and
 evidence are in [docs/stage-1-2.md](docs/stage-1-2.md).
 
-## Supporting Bare
+## Support the project
 
 Bare is one person and one phone. There is no company behind it, nothing in the browser sells
 you anything, and there is nothing to upsell you to later, which is rather the point of it.
 
-If it is useful to you, you can [buy me a coffee](https://buymeacoffee.com/sheshtawy). Entirely
-optional. It buys build hours and a second device to test on, and it changes nothing about the
-browser either way.
+If it is useful to you, you can buy me a coffee. Entirely optional. It buys build hours and a
+second device to test on, and it changes nothing about the browser either way.
+
+<a href="https://buymeacoffee.com/sheshtawy">
+  <img src="assets/bmc-button.png" width="200" alt="Buy me a coffee">
+</a>
 
 ## Repository layout
 
@@ -326,7 +329,7 @@ patches/                 the patch series, applied in order
 docker/                  container image definition
 docker-compose.yml       build environment
 builder.sh               container wrapper
-assets/                  logo and the screenshots used in this README
+assets/                  logo, screenshots and the support button used in this README
 tools/                   version numbers, release signing, build comparison
 VERSION                  Bare's version, independent of Chromium's
 third_party/             uBlock Origin as shipped, with its provenance
