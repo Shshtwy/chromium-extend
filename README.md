@@ -19,6 +19,16 @@ Built and used on a Pixel 10 Pro XL. Not affiliated with Google or the Chromium 
 extensions you'd use on a desktop. Tap an extension's icon and its window opens properly, and you
 can pin the ones you use most to the toolbar.
 
+**🚫 uBlock Origin, already installed.** The full version, not Lite. Full uBO needs Manifest V2,
+which Chrome has removed and Bare keeps working, so the filter lists and the element picker all
+do what they do on a desktop. It is not pinned and you can disable or remove it like anything
+else you installed yourself.
+
+**⬇️ Save the media a page is playing.** Long press an audio player or a video and Bare offers to
+download it. That includes sites that stream video in pieces rather than linking to a file, where
+a browser normally offers nothing at all, because Bare remembers what the page fetched. Downloads
+go out through the ordinary download path, external download manager included.
+
 **🔗 Links open in the browser, not in apps.** Tapping a Reddit or YouTube result keeps you in the
 browser instead of throwing you into their app mid-read. Phone numbers and email links still open
 the right app, as they should.
@@ -33,8 +43,10 @@ go and change. The new tab page follows it, so the Google logo is gone too.
 prompts, no Google services page, no password manager row that only says it stopped working. No
 first-run sign-in screen either: it opens straight to a new tab.
 
-**🎬 Video still works, and fullscreen behaves.** Ordinary video plays, and so does paid streaming
-like Netflix and Spotify — usually the first thing to break in a privacy-focused browser. Fullscreen
+**🎬 Video still works, and fullscreen behaves.** Ordinary video plays, and the proprietary codecs
+that usually go missing from a privacy-focused build are present. Protected streaming is the one
+thing not proven: Widevine is detected, but paid playback has not been exercised end to end, so
+treat Netflix and the like as untested rather than working. Fullscreen
 respects your rotation lock instead of forcing landscape, and fills the screen properly rather than
 sitting off-centre next to the camera cutout.
 
@@ -351,6 +363,26 @@ available key system — but actual protected playback has not been exercised en
   also refuses Google's own autofill service, so the path is third-party only.
 - **A custom search engine has no logo on the new tab page.** Engines added by hand carry no
   logo image, so the page shows none. Cosmetic only.
+- **A downloaded adaptive stream arrives as two files.** Sites that stream video split the sound
+  into a separate track, so Bare offers the video and the audio as two downloads and leaves you
+  to put them together. Joining them in the browser means demuxing and remuxing both, which is
+  built out of pieces already in the tree but is not built yet.
+- **Segmented HLS and DASH offer nothing.** A `.m3u8` or `.mpd` is a list of where the pieces
+  are, and a lone `.ts` or `.m4s` segment is not playable on its own, so both are refused rather
+  than handed over as a download that would disappoint. Assembling a segmented stream is the same
+  missing job as above.
+- **On a site that never reloads, the offered video may be one you scrolled past.** Feeds navigate
+  without loading a new document, so what the tab fetched accumulates, and Bare offers whichever
+  video it pulled the most of. Usually that is the one you watched. Not always.
+- **DRM-protected media cannot be downloaded**, and nothing here tries. Everything Bare offers is
+  a file the page already fetched in the clear.
+- **The first incognito tab of a session is slow to appear**, showing a blank panel or a fade
+  before it settles. Measured, understood, not yet fixed.
+- **Third-party autofill can stop being offered** until you navigate away and back. Bitwarden has
+  been seen to go quiet mid-session with no error anywhere; the silent early return that causes
+  it is known, the reason it triggers is not.
+- **arm64 only.** There is no build for armeabi-v7a or x86, so an older phone or an emulator
+  cannot install it.
 
 ## Not done yet
 
