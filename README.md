@@ -35,8 +35,9 @@ Built and used on a Pixel 10 Pro XL. Not affiliated with Google or the Chromium 
 
 - **Real browser extensions.** Bitwarden, Dark Reader, uBlock Origin: the desktop ones, on your
   phone. Pin the ones you use to the toolbar.
-- **uBlock Origin, already installed.** The full version, not Lite, because Bare keeps Manifest
-  V2 working. Remove it like anything else if you would rather not have it.
+- **[uBlock Origin](https://github.com/gorhill/uBlock), already installed.** The full version,
+  not Lite, because Bare keeps Manifest V2 working. Shipped exactly as its author publishes
+  it. Remove it like anything else if you would rather not have it.
 - **No Google in the loop.** No background check-ins, no telemetry, no AI features, no sign-in
   prompts anywhere. DuckDuckGo is the default from first launch.
 - **Save what a page is playing.** Long press a video or an audio player and Bare offers you the
@@ -338,14 +339,31 @@ docs/stage-1-2.md        execution notes, diagnoses, and results
 The Chromium checkout, build output, and APKs are not tracked: they live in a Docker volume
 and would be far past GitHub's file size limits.
 
-## License
+## Credits
 
-The patches modify Chromium source and are therefore subject to Chromium's
-**BSD-3-Clause** license. See the
+Bare is a thin layer on other people's work.
+
+**[Chromium](https://www.chromium.org/)** is the browser. The patches modify its source and are
+therefore subject to its **BSD-3-Clause** licence. See the
 [Chromium LICENSE](https://chromium.googlesource.com/chromium/src/+/main/LICENSE).
 
-`assets/logo_bare_blend.svg` and `assets/logo_bare_blend.png` are the Bare mark and belong
-to this project.
+**[uBlock Origin](https://github.com/gorhill/uBlock)**, by Raymond Hill and contributors, is
+licensed under the **GPL-3.0** and ships inside the apk. It is the extension exactly as its
+author publishes it: downloaded from the Chrome Web Store, unmodified, not repackaged and not
+re-signed, so it keeps its original extension id and his signature. The licence text travels
+inside it, the corresponding source is the upstream release, and provenance and checksum are in
+[third_party/ublock_origin](third_party/ublock_origin). Bundling it beside a BSD project is mere
+aggregation; uBlock Origin remains under the GPL and Bare's licence does not touch it. Bare is
+not affiliated with or endorsed by the uBlock Origin project.
 
-Chromium is a trademark of Google LLC. Bare is unaffiliated with Google or the Chromium
-project, and is not Chromium.
+**[Cromite](https://github.com/uazo/cromite)** and
+**[ungoogled-chromium](https://github.com/ungoogled-software/ungoogled-chromium)** were used as
+reference throughout. Finding every call site that reaches a Google service is the hard part of
+this work, and both projects had already found many of them. A couple of the patches here do the
+same job as theirs.
+
+`assets/logo_bare_blend.svg` and `assets/logo_bare_blend.png` are the Bare mark and belong to
+this project.
+
+Chromium is a trademark of Google LLC. Bare is unaffiliated with Google or the Chromium project,
+and is not Chromium.
