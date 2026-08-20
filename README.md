@@ -195,110 +195,39 @@ releases are signed.
 
 ## Verifying a build
 
-**The build is reproducible.** Building the same source twice produces an APK whose contents are
-identical byte for byte, so you do not have to trust the published binary: you can rebuild it
-and compare.
+Three questions, and they have different answers.
 
-One caveat, and it is the important one: releases are signed with Bare's own private key, so the
-published file as a whole is **not** something you can reproduce. Nobody but the holder of that
-key can produce that signature, which is the entire point of signing. What you can reproduce is
-everything the build actually produced, which is every byte except the signature.
-`tools/apk-content-hash.py` hashes exactly that, so two builds of the same source agree no matter
-who signed them.
+**Is this the file that was published?** Compare its SHA-256 against the one on the release page.
+That catches a truncated or tampered download and nothing else: the hash is published by the same
+person as the file, so on its own it proves nothing about where the file came from.
 
-This was measured, not assumed. The same tree was built two ways:
-
-| Build | How | SHA-256 |
-| --- | --- | --- |
-| `out/PixelFold` | incremental, with a day of history including an applied-then-reverted patch | `19577669…fb492d48` |
-| `out/Verify` | clean, from nothing, in a differently-named directory | `19577669…fb492d48` |
-
-Identical hashes, identical size, from a 6h15m clobber build against an incremental one. The
-differing directory name matters: a build path leaking into a binary is the most common cause of
-irreproducibility, and Chromium's [deterministic build
-support](https://chromium.googlesource.com/chromium/src/+/main/docs/deterministic_builds.md)
-holds here. Zip timestamps, the other usual cause, are already handled upstream: every entry is
-stamped `2001-01-01 00:00` rather than build time.
-
-That measurement was taken while builds were still signed with Chromium's checked-in debug key,
-which every build shares, so the APKs matched whole. They no longer do, and should not.
-
-### To verify a build yourself
-
-Follow [Build it yourself](#build-it-yourself) exactly, including the version arguments, then
-compare the result against the download:
+**Is it genuinely Bare?** Check who signed it. Nothing signed by any other key is Bare.
 
 ```bash
-tools/apk-content-hash.py out/Bare/apks/ChromePublic.apk Bare-1.0.0-alpha.1.apk
+apksigner verify --print-certs Bare-1.0.0-alpha.1.apk
 ```
-
-A rebuild from the same commit should report identical contents.
-
-### What this does and does not prove
-
-**Proven:** the build is deterministic in this container: directory names, build history, and
-clobber-versus-incremental do not change the output.
-
-**Not yet proven:** that a rebuild on *different* hardware, or in a container built at a
-different time, produces the same bytes. `docker/Dockerfile` starts from `ubuntu:22.04` and
-installs packages with `apt-get`, so the image drifts as upstream packages change. Chromium
-ships a hermetic toolchain through `DEPS`, so the host package set most likely does not affect
-the output, but that link is untested here, and a reproducibility claim is the wrong place for
-"most likely". If you rebuild on your own machine and get a different hash, please open an issue;
-that is the missing measurement.
-
-### Checking who signed a build
-
-Bare releases are signed with this certificate, and nothing else should be trusted as Bare:
 
     SHA-256  ae:2a:0e:7f:b7:a1:32:ec:51:7d:26:a8:e7:c8:3d:27
              5e:83:74:7b:0a:77:7d:4a:42:22:5b:1d:34:32:71:a0
     subject  CN=Bare Browser, O=Bare Browser, OU=Release
     key      RSA 4096
 
-    apksigner verify --print-certs Bare-1.0.0-alpha.1.apk
-
 **Releases before `v1.0.0-alpha.1` were signed with Chromium's debug key**, which is checked into
-Chromium's tree and therefore public. Anyone can build an APK that installs as an update over
-one of those. If you are running a Chromium Extend build, uninstall it rather than updating; a
-Bare release cannot replace it anyway, because the signing identity deliberately changed.
+Chromium's tree and therefore public. Anyone can build an APK that installs as an update over one
+of those. If you are running a Chromium Extend build, uninstall it rather than updating; a Bare
+release cannot replace it in place anyway, because the signing identity deliberately changed.
 
-### Release hashes
+**Can you rebuild it yourself?** Yes, and that is the only one of the three that proves where a
+binary came from. The signature is deliberately not reproducible, since nobody but the key holder
+can produce it, but everything else is. Follow [Build it yourself](#build-it-yourself) exactly,
+including the version arguments, then compare:
 
-Each release publishes the SHA-256 of its APK. That confirms the file you fetched is the file
-that was uploaded, and nothing more: it is self-attested, so on its own it proves nothing about
-provenance. The rebuild comparison above is what does that, and the signing certificate is what
-ties a build to Bare.
+```bash
+tools/apk-content-hash.py out/Bare/apks/ChromePublic.apk Bare-1.0.0-alpha.1.apk
+```
 
-| Release | Line | Signed with | SHA-256 |
-| --- | --- | --- | --- |
-| v1.2 | Chromium Extend | Chromium debug key | `8fe506d5e89da5a8c4c8feff0e74d8151334ee820eccf1223ca4a044ddfb6d33` |
-| v1.4 | Chromium Extend | Chromium debug key | `e70364b58f215c3a390fe92622d844112462ea21a604da15e77ec40f3e082105` |
-
-The Chromium Extend releases are left published as the line Bare grew out of. Their hashes are
-still good for checking a download, but their signatures mean nothing: the key is public.
-
-## Status
-
-**Verified on device.** No crashes across a full session. Extensions install and run
-(Bitwarden, uBlock Origin Lite, Dark Reader, Bypass Paywalls Clean), popups open, pinning
-works. Both original crash reproductions are gone. The shipped `AndroidManifest.xml` contains
-zero references to ML Kit or AICore.
-
-Patch 0005 is confirmed against a real in-page link tap: following a Reddit result from a search
-page keeps you in the browser, with Reddit's own "Open App" prompt left unused.
-
-Patches 0011 and 0012 are confirmed on device: fullscreen video follows the phone's orientation
-instead of forcing landscape, and sits centred in both portrait and landscape. 0013 is confirmed
-by geometry read off the running page, for both a 16:9 video and one taller than the viewport.
-
-Patches 0014 and 0015 are confirmed on a **wiped profile**, which is the only honest test for
-either: the new tab page shows DuckDuckGo and a query resolves to `duckduckgo.com`, and the
-browser opens straight to the new tab page with no first-run screen, including after a force
-stop and relaunch, which is what fails if the Terms of Service acceptance does not persist.
-
-**Not fully verified.** Widevine is *detected*: a DRM test page reports `widevine` as the
-available key system, but actual protected playback has not been exercised end to end.
+It hashes every entry except the signature, so two builds of the same source agree whoever signed
+them. [What has been measured, and what has not](docs/reproducibility.md).
 
 ## Known limitations
 
@@ -346,6 +275,9 @@ available key system, but actual protected playback has not been exercised end t
 - **On a site that never reloads, the offered video may be one you scrolled past.** Feeds navigate
   without loading a new document, so what the tab fetched accumulates, and Bare offers whichever
   video it pulled the most of. Usually that is the one you watched. Not always.
+- **Protected streaming is unproven.** Widevine is detected, and a DRM test page reports it
+  as the available key system, but paid playback has never been exercised end to end. Treat
+  Netflix and the like as untested rather than working.
 - **DRM-protected media cannot be downloaded**, and nothing here tries. Everything Bare offers is
   a file the page already fetched in the clear.
 - **The first incognito tab of a session is slow to appear**, showing a blank panel or a fade
@@ -389,6 +321,7 @@ tools/              version numbers, release signing, build comparison
 VERSION             Bare's version, independent of Chromium's
 third_party/        uBlock Origin as shipped, with its provenance
 docs/patches.md     what every patch does
+docs/repro*.md      what rebuilding has and has not proven
 docs/design.md      design decisions and rationale
 docs/stage-1-2.md   execution notes, diagnoses, and results
 ```
