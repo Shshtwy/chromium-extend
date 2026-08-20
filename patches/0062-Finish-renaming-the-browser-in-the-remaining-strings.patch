@@ -1,7 +1,7 @@
-From a0d818c1c7ba3501bdc51ebaa75647bc264390b0 Mon Sep 17 00:00:00 2001
+From f8ce58f7f9ea5b4d02a111d9c15987426f6c812d Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Thu, 20 Aug 2026 06:39:38 +0000
-Subject: [PATCH 62/63] Finish renaming the browser in the remaining strings
+Subject: Finish renaming the browser in the remaining strings
 
 An earlier pass renamed Chrome but left Chromium, which is what this build
 actually says: is_chrome_branded is false here, so the strings that ship are

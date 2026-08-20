@@ -1,7 +1,7 @@
-From 25c7e88f218cc4c0a7d0daa24be984bae4fdc2bc Mon Sep 17 00:00:00 2001
+From fdaedf6e71f5fb54c4e253b119900f1e030b24f3 Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Thu, 20 Aug 2026 06:39:39 +0000
-Subject: [PATCH 63/63] Remove Ask Gemini from the app menu
+Subject: Remove Ask Gemini from the app menu
 
 GlicEnabling.isEnabledForProfile() answers true before the profile has settled,
 so the entry appeared in the menu on the first launch after installing and

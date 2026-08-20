@@ -1,4 +1,4 @@
-From 6ef052be2302663042d4e454e2c90c312d5047e3 Mon Sep 17 00:00:00 2001
+From 4103a26eeff43972041b577c694207fe8f14b3fc Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Thu, 20 Aug 2026 15:18:25 +0000
 Subject: Stop asking the user to sign in to a Google account

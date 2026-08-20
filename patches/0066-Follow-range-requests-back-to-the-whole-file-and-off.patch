@@ -1,4 +1,4 @@
-From e0aca120ac00f9b754b470f8380346b237ce6f49 Mon Sep 17 00:00:00 2001
+From a78ae398907f7481d4ce7fb772e1eb62092e50c5 Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Thu, 20 Aug 2026 10:41:06 +0000
 Subject: Follow range requests back to the whole file, and offer the audio too

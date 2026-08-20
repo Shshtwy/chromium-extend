@@ -1,4 +1,4 @@
-From df1f670ff6c47769d0a1ee3a0ac9d5d14b0b9718 Mon Sep 17 00:00:00 2001
+From 9ec2a565d47bda87e590744b2c56b79650fb465d Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Thu, 20 Aug 2026 15:31:19 +0000
 Subject: Let extension context menu items run their own command

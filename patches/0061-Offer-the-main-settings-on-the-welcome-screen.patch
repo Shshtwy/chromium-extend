@@ -1,7 +1,7 @@
-From c69353956b22c9d7d6a732cc9a1845a1ebced58b Mon Sep 17 00:00:00 2001
+From 03d20aff7d88f7b8d83237bc199c382d965fa895 Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Thu, 20 Aug 2026 06:39:36 +0000
-Subject: [PATCH 61/63] Offer the main settings on the welcome screen
+Subject: Offer the main settings on the welcome screen
 
 The first launch now asks about the handful of things people change first:
 search engine, address bar position, autofill provider, an external download
