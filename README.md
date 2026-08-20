@@ -66,6 +66,18 @@ Built and used on a Pixel 10 Pro XL. Not affiliated with Google or the Chromium 
 | <img src="assets/screenshots/Screenshot_06.png" width="260"> | <img src="assets/screenshots/Screenshot_07.png" width="260"> |
 | Screenshot 5 | Screenshot 6 |
 
+## Support the project
+
+Bare is one person and one phone. There is no company behind it, nothing in the browser sells
+you anything, and there is nothing to upsell you to later, which is rather the point of it.
+
+If it is useful to you, you can buy me a coffee. Entirely optional. It buys build hours and a
+second device to test on, and it changes nothing about the browser either way.
+
+<a href="https://buymeacoffee.com/sheshtawy">
+  <img src="assets/bmc-button.png" width="200" alt="Buy me a coffee">
+</a>
+
 ## Why
 
 Chromium's Desktop Android build supports real browser extensions, which mobile Chrome does
@@ -309,18 +321,6 @@ Worth knowing before anyone patches them: a public (non-Chrome-branded) Chromium
 sends no usage metrics, no URL-keyed metrics and no crash reports, because upstream withholds
 those endpoints from forks. Translate is likewise disabled without a Google API key. Details and
 evidence are in [docs/stage-1-2.md](docs/stage-1-2.md).
-
-## Support the project
-
-Bare is one person and one phone. There is no company behind it, nothing in the browser sells
-you anything, and there is nothing to upsell you to later, which is rather the point of it.
-
-If it is useful to you, you can buy me a coffee. Entirely optional. It buys build hours and a
-second device to test on, and it changes nothing about the browser either way.
-
-<a href="https://buymeacoffee.com/sheshtawy">
-  <img src="assets/bmc-button.png" width="200" alt="Buy me a coffee">
-</a>
 
 ## Repository layout
 
