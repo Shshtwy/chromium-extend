@@ -78,7 +78,8 @@ themselves are in [`patches/`](../patches); this is the summary of what each one
 | 0071 | Add touch and letter navigation gestures | Edge swipes, gesture trail, and letter 'C' (Close) tab closure recognizer |
 | 0072 | Add in-browser task manager and memory saver | Live tab memory inspector, traffic-light status, and process control |
 | 0073 | Add egixi signature entrance animation | Sleek hardware-accelerated signature splash badge on egixi.com |
-| 0074 | Add Spanish interface translations | Spanish (es / es-419) translations for task manager, gestures, security, settings, media, devtools and welcome onboarding |
+| 0074 | Allow incognito screenshots with shake and watermark | Unlocks incognito screenshots, shake gesture, and discreet watermark |
+| 0075 | Add Spanish interface translations | Spanish (es / es-419) translations for incognito snapshots, task manager, gestures, security, settings |
 
 Patches 0001 and 0002 are bug fixes that happen to be prerequisites. 0003 is a usability fix.
 0004 through 0010 are the de-Googling, as are 0014 through 0021. 0011 through 0013 fix

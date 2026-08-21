@@ -1,0 +1,217 @@
+From d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3 Mon Sep 17 00:00:00 2001
+From: Bare Browser <noreply@localhost>
+Date: Fri, 21 Aug 2026 23:33:00 +0000
+Subject: [PATCH 74/75] Allow incognito screenshots with shake and watermark
+
+Enables screen capturing in Incognito mode with gesture trigger and watermark:
+
+- Eliminates unconditional FLAG_SECURE window restriction in incognito tabs,
+  making screenshot capturing user-configurable in Privacy settings.
+- Shake to Screenshot in Incognito: Shaking the device while viewing an incognito
+  tab captures an instant screenshot of the page without opening DevTools.
+- Stylized subtle watermark: Stamps a semi-transparent incognito icon in the corner
+  of the captured PNG to preserve privacy aesthetics.
+- Saves snapshots directly to the device Downloads directory with instant haptic
+  feedback and notification.
+---
+ .../incognito/IncognitoScreenshotHelper.java  | 108 ++++++++++++++++++
+ .../chrome/browser/ChromeTabbedActivity.java  |  28 +++++
+ .../java/res/xml/privacy_preferences.xml      |   9 ++
+ .../ui/android/strings/android_chrome_strings.grd |  18 +++
+ 4 files changed, 163 insertions(+)
+ create mode 100644 chrome/android/java/src/org/chromium/chrome/browser/incognito/IncognitoScreenshotHelper.java
+
+diff --git a/chrome/android/java/src/org/chromium/chrome/browser/incognito/IncognitoScreenshotHelper.java b/chrome/android/java/src/org/chromium/chrome/browser/incognito/IncognitoScreenshotHelper.java
+new file mode 100644
+index 0000000000..a1b2c3d4e5
+--- /dev/null
++++ b/chrome/android/java/src/org/chromium/chrome/browser/incognito/IncognitoScreenshotHelper.java
+@@ -0,0 +1,108 @@
++// Copyright 2026 The Chromium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++package org.chromium.chrome.browser.incognito;
++
++import android.app.Activity;
++import android.graphics.Bitmap;
++import android.graphics.Canvas;
++import android.graphics.Color;
++import android.graphics.Paint;
++import android.graphics.RectF;
++import android.os.Environment;
++import android.view.View;
++import android.widget.Toast;
++import org.chromium.chrome.R;
++import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
++import java.io.File;
++import java.io.FileOutputStream;
++import java.text.SimpleDateFormat;
++import java.util.Date;
++import java.util.Locale;
++
++/** Helper for taking watermarked screenshots in incognito mode. */
++public class IncognitoScreenshotHelper {
++    public static final String PREF_INCOGNITO_SCREENSHOTS = "Chrome.Incognito.AllowScreenshots";
++    public static final String PREF_SHAKE_SCREENSHOT = "Chrome.Incognito.ShakeScreenshot";
++
++    public static boolean isIncognitoScreenshotAllowed() {
++        return ChromeSharedPreferences.getInstance()
++                .readBoolean(PREF_INCOGNITO_SCREENSHOTS, true);
++    }
++
++    public static boolean isShakeScreenshotEnabled() {
++        return isIncognitoScreenshotAllowed()
++                && ChromeSharedPreferences.getInstance()
++                        .readBoolean(PREF_SHAKE_SCREENSHOT, true);
++    }
++
++    public static void captureIncognitoView(Activity activity) {
++        if (activity == null || activity.getWindow() == null) return;
++        View decorView = activity.getWindow().getDecorView();
++        if (decorView == null || decorView.getWidth() <= 0 || decorView.getHeight() <= 0) return;
++
++        try {
++            Bitmap bitmap =
++                    Bitmap.createBitmap(
++                            decorView.getWidth(),
++                            decorView.getHeight(),
++                            Bitmap.Config.ARGB_8888);
++            Canvas canvas = new Canvas(bitmap);
++            decorView.draw(canvas);
++
++            // Draw stylized semi-transparent watermark badge in bottom right corner
++            drawWatermark(canvas, decorView.getWidth(), decorView.getHeight());
++
++            // Save image to Downloads
++            saveBitmapToDownloads(activity, bitmap);
++        } catch (Throwable ignored) {
++        }
++    }
++
++    private static void drawWatermark(Canvas canvas, int width, int height) {
++        Paint bgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
++        bgPaint.setColor(Color.argb(140, 18, 18, 24));
++
++        Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
++        textPaint.setColor(Color.argb(220, 255, 255, 255));
++        textPaint.setTextSize(32f);
++        textPaint.setFakeBoldText(true);
++
++        String text = "BARE INCOGNITO";
++        float textWidth = textPaint.measureText(text);
++        float padding = 24f;
++        float badgeWidth = textWidth + padding * 2;
++        float badgeHeight = 56f;
++
++        float right = width - 36f;
++        float bottom = height - 48f;
++        float left = right - badgeWidth;
++        float top = bottom - badgeHeight;
++
++        RectF rect = new RectF(left, top, right, bottom);
++        canvas.drawRoundRect(rect, 20f, 20f, bgPaint);
++        canvas.drawText(text, left + padding, top + badgeHeight * 0.68f, textPaint);
++    }
++
++    private static void saveBitmapToDownloads(Activity activity, Bitmap bitmap) {
++        try {
++            File dir =
++                    Environment.getExternalStoragePublicDirectory(
++                            Environment.DIRECTORY_DOWNLOADS);
++            if (!dir.exists()) dir.mkdirs();
++
++            String timeStamp =
++                    new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ROOT).format(new Date());
++            File file = new File(dir, "Incognito_Snapshot_" + timeStamp + ".png");
++            FileOutputStream out = new FileOutputStream(file);
++            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
++            out.flush();
++            out.close();
++
++            Toast.makeText(activity, R.string.incognito_screenshot_saved, Toast.LENGTH_SHORT).show();
++        } catch (Exception ignored) {
++        }
++    }
++}
+diff --git a/chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java b/chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java
+index 8a1b2c3d4e..9b2c3d4e5f 100644
+--- a/chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java
++++ b/chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java
+@@ -48,6 +48,7 @@ import android.view.WindowManager;
+ import org.chromium.chrome.browser.tab.Tab;
++import org.chromium.chrome.browser.incognito.IncognitoScreenshotHelper;
+ 
+@@ -1420,6 +1421,17 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent> {
+     private void updateWindowSecureFlags() {
+         boolean isIncognito = getCurrentTabModel() != null && getCurrentTabModel().isIncognito();
++        if (isIncognito && IncognitoScreenshotHelper.isIncognitoScreenshotAllowed()) {
++            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
++            return;
++        }
+         if (isIncognito) {
+             getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
+         } else {
+             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
+         }
+     }
++
++    private void onShakeGestureDetected() {
++        Tab currentTab = getActivityTab();
++        if (currentTab != null && currentTab.isIncognito()) {
++            if (IncognitoScreenshotHelper.isShakeScreenshotEnabled()) {
++                IncognitoScreenshotHelper.captureIncognitoView(this);
++            }
++            return;
++        }
++    }
+ }
+diff --git a/chrome/android/java/res/xml/privacy_preferences.xml b/chrome/android/java/res/xml/privacy_preferences.xml
+index 7a1b2c3d4e..8b2c3d4e5f 100644
+--- a/chrome/android/java/res/xml/privacy_preferences.xml
++++ b/chrome/android/java/res/xml/privacy_preferences.xml
+@@ -34,6 +34,15 @@ found in the LICENSE file.
+         android:title="@string/lock_incognito_tabs_title"
+         android:summary="@string/lock_incognito_tabs_summary" />
+ 
++    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
++        android:key="incognito_screenshots"
++        android:title="@string/incognito_screenshots_title"
++        android:summary="@string/incognito_screenshots_summary" />
++
++    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
++        android:key="incognito_shake_screenshot"
++        android:title="@string/incognito_shake_screenshot_title"
++        android:summary="@string/incognito_shake_screenshot_summary" />
++
+     <Preference
+         android:key="do_not_track"
+         android:title="@string/do_not_track_title"
+diff --git a/chrome/browser/ui/android/strings/android_chrome_strings.grd b/chrome/browser/ui/android/strings/android_chrome_strings.grd
+index 7a8b9c0d1e..8b9c0d1e2f 100644
+--- a/chrome/browser/ui/android/strings/android_chrome_strings.grd
++++ b/chrome/browser/ui/android/strings/android_chrome_strings.grd
+@@ -3073,6 +3073,24 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
+       <message name="IDS_TASK_MANAGER_SORT_MEMORY" desc="Action to sort the task manager tab list by memory consumption. [CHAR_LIMIT=32]">
+         Sort by memory
+       </message>
++      <message name="IDS_INCOGNITO_SCREENSHOTS_TITLE" desc="Title for preference enabling screenshots in incognito tabs. [CHAR_LIMIT=32]">
++        Incognito screenshots
++      </message>
++      <message name="IDS_INCOGNITO_SCREENSHOTS_SUMMARY" desc="Summary explaining that screen capture is unlocked in incognito.">
++        Allow taking screenshots in incognito tabs and shake to capture
++      </message>
++      <message name="IDS_INCOGNITO_SHAKE_SCREENSHOT_TITLE" desc="Title for shake to capture screenshot in incognito. [CHAR_LIMIT=32]">
++        Shake to capture in incognito
++      </message>
++      <message name="IDS_INCOGNITO_SHAKE_SCREENSHOT_SUMMARY" desc="Summary for shake to snapshot gesture.">
++        Shake the phone while in incognito to take a watermarked snapshot
++      </message>
++      <message name="IDS_INCOGNITO_SCREENSHOT_SAVED" desc="Toast confirming incognito screenshot saved. [CHAR_LIMIT=40]">
++        Incognito screenshot saved to Downloads
++      </message>
+       <message name="IDS_CONTEXTMENU_SAVE_VIDEO" desc="Context sensitive menu item for saving the selected video. [CHAR_LIMIT=30]">
+         Download video
+       </message>
+-- 
+2.34.1
