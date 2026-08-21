@@ -1,4 +1,4 @@
-# Build artifacts — APKs run ~465 MB each, far past GitHub's 100 MB file limit.
+# Build artifacts: APKs run ~465 MB each, far past GitHub's 100 MB file limit.
 *.apk
 *.apk.idsig
 *.aab
@@ -26,3 +26,10 @@ args.gn.*
 
 # macOS
 .DS_Store
+
+# Signing material. The keystore lives outside the repo and its password lives
+# in the keychain; these patterns exist so a stray copy can never be committed.
+*.p12
+*.jks
+*.keystore
+.bare-signing/

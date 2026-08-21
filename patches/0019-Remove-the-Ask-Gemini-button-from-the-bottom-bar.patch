@@ -1,7 +1,7 @@
 From fc1b028e32e27fb726e4448d90c531693c610f1f Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Sun, 16 Aug 2026 08:19:46 +0000
-Subject: [PATCH 19/37] Remove the Ask Gemini button from the bottom bar
+Subject: [PATCH 19/49] Remove the Ask Gemini button from the bottom bar
 
 The bottom bar keeps a shared extra slot whose occupant is resolved by
 getEligibleExtraAction. Both candidates are Google surfaces: GLIC is the Ask

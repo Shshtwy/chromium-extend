@@ -1,7 +1,7 @@
 From f7632cab809d1cc7c403dba6337c328afc99832c Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Tue, 18 Aug 2026 16:20:53 +0000
-Subject: [PATCH 33/37] Stop the browser painting white while a page loads on a
+Subject: [PATCH 33/49] Stop the browser painting white while a page loads on a
  dark theme
 
 On a dark theme every navigation showed a white flash before the page appeared, which is

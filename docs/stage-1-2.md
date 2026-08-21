@@ -4,7 +4,7 @@
 > `$PROJECT_ROOT` is the directory containing `builder.sh`; `$DEVICE` is the
 > `adb -s` serial of the test device.
 
-**Goal:** Remove the abandoned Phase 2 Google account integration, then strip every Google AI, XR, and phone-home surface that can be disabled with a GN build flag — producing a Chromium APK that still runs extensions and plays video.
+**Goal:** Remove the abandoned Phase 2 Google account integration, then strip every Google AI, XR, and phone-home surface that can be disabled with a GN build flag, producing a Chromium APK that still runs extensions and plays video.
 
 **Architecture:** Work happens inside the `chromium-android-builder` container against the git checkout at `/work/chromium/src`, currently on branch `local-patches`. Stage 1 discards uncommitted Phase 2 work (everything worth keeping is already committed). Stage 2 appends GN flags to `out/PixelFold/args.gn`, split into two builds so the riskiest flag fails in isolation. The macOS side keeps a mirror of `args.gn` under `local-src/` as the durable record, since `out/` is not tracked by git.
 
@@ -26,7 +26,7 @@ Google integration.
 
 ## Preconditions
 
-- Docker Desktop running. It has stopped unexpectedly twice (2026-08-13, 2026-08-14) — if a build
+- Docker Desktop running. It has stopped unexpectedly twice (2026-08-13, 2026-08-14). If a build
   dies mid-task, check `docker info` before assuming a compile error.
 - At least 40 GB free on the macOS volume. Check with `./builder.sh status`.
 - Container running: `./builder.sh start`
@@ -36,8 +36,8 @@ Google integration.
 
 | File | Responsibility | Change |
 | --- | --- | --- |
-| `/work/chromium/src/out/PixelFold/args.gn` | Live build configuration inside container | Modify — append flags |
-| `local-src/out/PixelFold/args.gn` | macOS-side mirror; the durable record of build config | Modify — keep in sync |
+| `/work/chromium/src/out/PixelFold/args.gn` | Live build configuration inside container | Modify: append flags |
+| `local-src/out/PixelFold/args.gn` | macOS-side mirror; the durable record of build config | Modify: keep in sync |
 | `/work/chromium/src/components/signin/public/android/BUILD.gn` | Signin Java + junit source registration | Revert to HEAD |
 | `/work/chromium/src/chrome/android/java/AndroidManifest.xml` | Chrome Android manifest | Revert to HEAD |
 | `/work/chromium/src/components/signin/.../AccountManagerFacadeProvider.java` | Chooses the account delegate | Revert to HEAD |
@@ -121,7 +121,7 @@ at 467 MB.
 
 ## Task 2: Revert Phase 2
 
-Everything worth keeping is committed. The revert is therefore a discard, not a merge — there is
+Everything worth keeping is committed. The revert is therefore a discard, not a merge. There is
 nothing to commit at the end of this task.
 
 **Files:**
@@ -134,7 +134,7 @@ nothing to commit at the end of this task.
 
 - [ ] **Step 1: Archive the Phase 2 work before discarding it**
 
-Phase 2 took two days and was validated on-device. It is being abandoned, not proven wrong — keep
+Phase 2 took two days and was validated on-device. It is being abandoned, not proven wrong. Keep
 a copy in case it is ever wanted.
 
 ```
@@ -187,7 +187,7 @@ cd /work/chromium/src && grep -n "NullAccountManagerDelegateTest" components/sig
 
 Expected: one line registering
 `junit/src/org/chromium/components/signin/NullAccountManagerDelegateTest.java`. If this returns
-nothing, the split failed and the test is orphaned — stop and fix before continuing.
+nothing, the split failed and the test is orphaned. Stop and fix before continuing.
 
 ---
 
@@ -237,7 +237,7 @@ Expected: no output. This is the pre-flag baseline that Stage 2 is measured agai
 
 ---
 
-## Task 4: Stage 2a — remove Safe Browsing
+## Task 4: Stage 2a, remove Safe Browsing
 
 `safe_browsing_mode = 0` is applied alone because the Android build path assumes mode 2. If it
 fails, the failure must be unambiguous.
@@ -262,7 +262,7 @@ cd /work/chromium/src && printf '\n# de-Google: Safe Browsing removed (stage 2a)
 
 Expected: the comment and `safe_browsing_mode = 0` echoed back.
 
-- [ ] **Step 3: Regenerate — this is where failure is most likely**
+- [ ] **Step 3: Regenerate; this is where failure is most likely**
 
 ```
 cd /work/chromium/src && gn gen out/PixelFold
@@ -305,11 +305,11 @@ Then on the macOS side:
 cp "$PROJECT_ROOT/exchange/args.gn.current" "$PROJECT_ROOT/local-src/out/PixelFold/args.gn"
 ```
 
-Expected: no output. Verify with `tail -3 "$PROJECT_ROOT/local-src/out/PixelFold/args.gn"` — it should end with `safe_browsing_mode = 0`.
+Expected: no output. Verify with `tail -3 "$PROJECT_ROOT/local-src/out/PixelFold/args.gn"`; it should end with `safe_browsing_mode = 0`.
 
 ---
 
-## Task 5: Stage 2b — remove AI, XR, and remaining phone-home flags
+## Task 5: Stage 2b, remove AI, XR, and remaining phone-home flags
 
 **Files:**
 - Modify: `/work/chromium/src/out/PixelFold/args.gn`
@@ -409,7 +409,7 @@ ls -lh "$PROJECT_ROOT/exchange/"ChromePublic-degoogle-stage*.apk
 
 Expected: the stage2 APK is meaningfully smaller than stage1. Dropping ML Kit, AICore, ARCore,
 Cardboard, and OpenXR should be visible. If the sizes are within a megabyte of each other, the
-flags did not take effect — investigate before proceeding.
+flags did not take effect. Investigate before proceeding.
 
 - [ ] **Step 3: Extract the shipped manifest**
 
@@ -429,7 +429,7 @@ On the macOS side:
 grep -icE "mlkit|aicore|ar\.core|cardboard|vrcore|openxr" "$PROJECT_ROOT/exchange/stage2-manifest.txt"
 ```
 
-Expected: `0`. Any nonzero count means a component survived — identify which and why before
+Expected: `0`. Any nonzero count means a component survived. Identify which and why before
 declaring Stage 2 complete.
 
 - [ ] **Step 5: Confirm what must still be present**
@@ -449,8 +449,8 @@ Target device changed. The project was built against a Pixel Fold; the connected
 | Property | Value | Note |
 | --- | --- | --- |
 | ABI | `arm64-v8a` | Matches `target_cpu = "arm64"` |
-| Android | 17 (SDK 37) | Build targets SDK 36 — forward-compatible |
-| Screen | 1344x2992 @ 480dpi | 448dp wide — **phone layout**, not tablet |
+| Android | 17 (SDK 37) | Build targets SDK 36, forward-compatible |
+| Screen | 1344x2992 @ 480dpi | 448dp wide, **phone layout**, not tablet |
 | Installed | 153.0.7999.0, code 799900074, 2026-08-12 16:56 | The Aug 12 extension-fix APK |
 
 Two consequences:
@@ -490,7 +490,7 @@ adb -s $DEVICE logcat -d -b crash > "$PROJECT_ROOT/exchange/stage2-crash.log"
 
 Both crash-fix regression tests pass identically before and after the Phase 2 revert:
 `NullAccountManagerDelegateTest` 2/2, `ChromeTabbedActivityUnitTest` 4/4 (each sharded across
-API 29 and API 36). The `components/signin/public/android/BUILD.gn` split held — the Phase 1 test
+API 29 and API 36). The `components/signin/public/android/BUILD.gn` split held: the Phase 1 test
 registration survived `git checkout -- .` while the Phase 2 lines were dropped.
 
 Stage 1 baseline APK: **489,491,956 bytes**. That is 8,227 bytes smaller than the 2026-08-12
@@ -498,9 +498,9 @@ build, consistent with three small Phase 2 Java classes leaving the APK.
 
 Phase 2 archived at `exchange/phase2-abandoned-2026-08-14.patch` plus three `.java` files.
 
-### Task 4: `safe_browsing_mode = 0` ABANDONED — diagnosed
+### Task 4: `safe_browsing_mode = 0` ABANDONED, diagnosed
 
-`gn gen` **succeeded** (62,705 targets vs 62,728 baseline — 23 Safe Browsing targets dropped
+`gn gen` **succeeded** (62,705 targets vs 62,728 baseline, 23 Safe Browsing targets dropped
 cleanly). The ninja build then failed on exactly one file:
 
 ```
@@ -511,10 +511,10 @@ error: no member named 'safe_browsing_service' in 'BrowserProcess'
 
 One un-gated call site: the Android JNI bridge calls `BrowserProcess::safe_browsing_service()`
 unconditionally, but that method is compiled out at mode 0. This is a **one-file source patch**,
-not a structural blocker — guard the call site or exclude the file when mode is 0. Cromite carries
+not a structural blocker. Guard the call site or exclude the file when mode is 0. Cromite carries
 an equivalent patch. Moved to Stage 3.
 
-### Task 5: 5 of 12 flags APPLIED — FINAL
+### Task 5: 5 of 12 flags APPLIED, FINAL
 
 Applied and verified in a shipping APK: `use_mlkit_for_aicore`,
 `enable_glic_internal_resources`, `enable_reporting`, `enable_service_discovery`, `enable_mdns`.
@@ -522,20 +522,20 @@ Applied and verified in a shipping APK: `use_mlkit_for_aicore`,
 Final APK: **487,924,549 bytes**, down 1,567,407 from the 489,491,956 Stage 1 baseline.
 Manifest verification: `mlkit` 0 occurrences, `aicore` 0 occurrences, `extension` retained.
 
-#### The XR group is coupled both ways — DEFERRED TO STAGE 3
+#### The XR group is coupled both ways: DEFERRED TO STAGE 3
 
 `enable_arcore`, `enable_cardboard`, and `enable_openxr` initially appeared to apply cleanly
 because `gn gen` accepted them. They do not survive a full build. There is **no GN-only
 configuration** that removes Google's XR SDKs on Android.
 
-`enable_vr` is not independent — its default is derived
+`enable_vr` is not independent: its default is derived
 (`device/vr/buildflags/buildflags.gni:36`):
 
 ```gn
 enable_vr = enable_openxr || enable_cardboard || enable_arcore || (is_linux && ...)
 ```
 
-**Direction 1 — backends off (so `enable_vr` auto-false):** compilation fails.
+**Direction 1: backends off (so `enable_vr` auto-false):** compilation fails.
 
 ```
 searchbox_handler.cc:897 / :969  no member named 'GetVectorIcon' in 'AutocompleteMatch'
@@ -547,7 +547,7 @@ at `components/omnibox/browser/autocomplete_match.h:378` and
 `components/omnibox/browser/actions/omnibox_action.h:24`. On Android that reduces to `ENABLE_VR`
 alone, so the methods vanish while the omnibox calls them un-gated.
 
-**Direction 2 — backends off plus `enable_vr = true` forced:** JNI registration fails.
+**Direction 2: backends off plus `enable_vr = true` forced:** JNI registration fails.
 
 ```
 Failed JNI assertion!
@@ -564,7 +564,7 @@ because the backends are off.
 Removing the XR SDKs therefore requires the omnibox source patch first. Until then, `ar.core`,
 `cardboard`, `vrcore`, and `openxr` remain in the shipped manifest (6/8/1/2 occurrences).
 
-Note that both failures surface only deep into compilation or dexing — hours after `gn gen`
+Note that both failures surface only deep into compilation or dexing, hours after `gn gen`
 succeeds. **`gn gen` accepting a flag is not evidence the flag works.**
 
 #### Superseded note
@@ -599,7 +599,7 @@ under an unconditional caller.
 
 `enable_arcore`, `enable_cardboard`, and `enable_openxr` are unaffected and remain applied.
 
-Three more abandoned, all **GN `assert()` failures** rather than compile errors — the build config
+Three more abandoned, all **GN `assert()` failures** rather than compile errors: the build config
 was refused outright:
 
 | Flag | Assert location |
@@ -610,7 +610,7 @@ was refused outright:
 
 `enable_supervised_users` is the softest of the three: its assert lives in **test** code, not
 browser code, so it may be removable without touching anything that ships.
-`build_with_model_execution` is the highest-value recovery — it is the framework the built-in AI
+`build_with_model_execution` is the highest-value recovery: it is the framework the built-in AI
 features hang off, a larger prize than the ML Kit bridge alone.
 
 `gn gen` with the 9 applied flags: **62,392 targets** (down 336 from 62,728), confirming the flags
@@ -643,13 +643,13 @@ Four items, each with a precise diagnosis, in addition to the network patches al
    `enable_offline_pages = false`
 5. **XR group (highest value remaining).** Guard the `GetVectorIcon` call sites at
    `searchbox_handler.cc:897`, `searchbox_handler.cc:969`, and `omnibox_edit_model.cc:1947`, then
-   set `enable_arcore`, `enable_cardboard`, and `enable_openxr` to false — `enable_vr` follows
+   set `enable_arcore`, `enable_cardboard`, and `enable_openxr` to false: `enable_vr` follows
    automatically. Do NOT force `enable_vr = true` as a workaround; that breaks WebXR JNI
    registration instead. This removes `com.google.ar.core`, `com.google.cardboard.sdk`,
    `com.google.vr.vrcore`, and `libopenxr.google.so`.
 
 6. **Extensions toolbar on phone layouts (usability, not de-Googling).** On a phone-width layout
-   there is no way to open an extension's popup or pin it — only enable/disable/remove via
+   there is no way to open an extension's popup or pin it, only enable/disable/remove via
    `chrome://extensions`. Confirmed cause:
 
    - `setExtensionsToolbarCoordinator` is implemented only in
@@ -665,13 +665,13 @@ Four items, each with a precise diagnosis, in addition to the network patches al
    **Pin to toolbar**, and working extension popups (Bitwarden login confirmed).
 
    The patch is to create the coordinator on phone layouts and give `ToolbarPhone` somewhere to
-   host it. This is genuine UI work — the phone toolbar has no space designed for extension icons.
+   host it. This is genuine UI work: the phone toolbar has no space designed for extension icons.
 
    **Do not ship the density workaround.** Changing `wm density` is system-wide, and on the test
    device it caused the launcher to rebuild its home screen grid and drop icons, which resetting
    the density did not restore.
 
-7. **External intents — stop links opening in apps.** Navigations to sites with an installed app
+7. **External intents: stop links opening in apps.** Navigations to sites with an installed app
    (Reddit, YouTube, etc.) hand off to that app with no prompt and no in-browser setting to stop
    it. Patch `components/external_intents/android/java/src/org/chromium/components/external_intents/ExternalNavigationHandler.java`
    so external intents are never auto-launched. Cromite carries an equivalent patch.
@@ -680,7 +680,7 @@ Four items, each with a precise diagnosis, in addition to the network patches al
    `adb shell pm set-app-links --package <pkg> 0 all`, or Settings → Apps → *app* →
    Open by default → disable "Open supported links". There is no global Android toggle.
 
-### Already neutralized upstream — do not re-investigate
+### Already neutralized upstream: do not re-investigate
 
 Verified 2026-08-15. Several targets originally listed for Stage 3 need no work, because a
 public (non-Chrome-branded, non-official) Chromium build already has them disabled. Recorded
@@ -730,7 +730,7 @@ Autofill crowdsourcing uploads the structure of encountered forms (field names a
 Local autofill is unaffected by its removal. The translate ranker has three conditional URL
 definitions, so it needs reading before patching rather than a single-line change.
 
-### First-run experience — priority item for Stage 5
+### First-run experience: priority item for Stage 5
 
 On a fresh profile the browser opens a full-screen first-run page: "Make Chrome your own",
 "Sign in to get your bookmarks, passwords, and more on all your devices", with **Add account to
@@ -755,21 +755,21 @@ settings entries and belongs in Stage 5's scope.
 
 ### GN assert findings (tested 2026-08-15)
 
-The three abandoned flags were assumed to share one cause — test targets in the graph asserting
+The three abandoned flags were assumed to share one cause: test targets in the graph asserting
 on production flags. Testing showed they do not.
 
-**`enable_supervised_users` — structurally blocked, not a test artifact.** Relaxing the assert at
+**`enable_supervised_users`: structurally blocked, not a test artifact.** Relaxing the assert at
 `chrome/test/BUILD.gn:57` only exposed a second one at **`chrome/android/BUILD.gn:15`**, reached
 via `//chrome/android:chrome_junit_tests` from the root `BUILD.gn`. That file builds
 `chrome_public_apk` itself, so the flag is genuinely required by the Android build. Removing
 Family Link support needs real code changes, not assert relaxation. Attempt reverted.
 
-**`enable_offline_pages` — assert is test-only.** It fires at
+**`enable_offline_pages`: assert is test-only.** It fires at
 `chrome/browser/offline_pages/BUILD.gn:7`, reached from `chrome/test/BUILD.gn:1581`
 (`//chrome/browser/offline_pages:impl`). Unlike supervised users, nothing in `chrome/android`
 asserts on it, so this one may be reachable by guarding the test dependency. Untested.
 
-**`build_with_model_execution` — needs dependency surgery.** `//chrome/browser/ai` is referenced
+**`build_with_model_execution`: needs dependency surgery.** `//chrome/browser/ai` is referenced
 from at least five places in `chrome/test/BUILD.gn`, so removing the dep is not a single edit.
 Note the practical value is limited: the AI models and services are already disabled through
 `use_mlkit_for_aicore`, `enable_glic_internal_resources`,
@@ -786,12 +786,12 @@ than caused by any patch in this series.
 
 ### Build diagnostics: where errors actually appear
 
-`autoninja` writes almost nothing to stdout/stderr under siso — a redirected build log may contain
+`autoninja` writes almost nothing to stdout/stderr under siso: a redirected build log may contain
 only four lines and no error at all, even on failure. **Real build errors are in
 `out/PixelFold/siso_output`**, with re-runnable commands in `out/PixelFold/siso_failed_commands.sh`.
 Always check those on a nonzero exit; the redirected log is not sufficient.
 
-Similarly, tailing a build log is not a liveness check — siso can appear frozen at
+Similarly, tailing a build log is not a liveness check: siso can appear frozen at
 `waiting for lock holder` while compiling normally. To judge whether a build is alive, count
 recently written objects:
 

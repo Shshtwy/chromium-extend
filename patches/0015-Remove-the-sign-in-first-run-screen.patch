@@ -1,7 +1,7 @@
 From 4f40ba6ff93c93102810729ee4425c06138025db Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Sun, 16 Aug 2026 05:31:52 +0000
-Subject: [PATCH 15/37] Remove the sign-in first run screen
+Subject: [PATCH 15/49] Remove the sign-in first run screen
 
 The first run screen promotes signing into a Google account, which this build
 deliberately cannot do, and its footer states that usage and crash data are sent

@@ -1,0 +1,14 @@
+# Bare's own version, independent of the Chromium it is built on.
+#
+# BUILD increments on every published artifact, including two builds of the
+# same version. It is what makes versionCode move, and versionCode is the only
+# thing Android looks at when deciding whether one APK may replace another.
+MAJOR=1
+MINOR=0
+PATCH=0
+BUILD=1
+
+# alpha, beta or stable. Appears in the version name and nowhere else; there is
+# one application id and one channel of releases for now.
+CHANNEL=alpha
+CHANNEL_NUM=1
