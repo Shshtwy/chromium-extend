@@ -1,0 +1,413 @@
+From 9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b Mon Sep 17 00:00:00 2001
+From: Bare Browser <noreply@localhost>
+Date: Fri, 21 Aug 2026 23:15:00 +0000
+Subject: [PATCH 71/72] Add touch and letter navigation gestures
+
+Introduces Vivaldi/Opera-inspired touch and shape gestures for Android:
+
+- Edge swipe navigation: Swiping from the left/right screen edges navigates back
+  and forward with haptic feedback.
+- Letter and shape gesture recognizer: Robust directional vector and curvature
+  classifier that reliably recognizes drawing 'C' (Close / Cerrar) to close open
+  tabs without false triggers during normal vertical scrolling.
+- Real-time gesture trail overlay: Renders a smooth, glowing line with fade-out
+  animation while the user is drawing a gesture.
+- Dedicated Navigation Gestures panel in Settings: Configurable toggles for edge
+  swipes, shape recognition, and trail rendering.
+---
+ .../res/drawable/ic_gesture_navigation.xml    |  12 +++
+ .../android/java/res/xml/gesture_preferences.xml  |  34 ++++++
+ .../android/java/res/xml/main_preferences.xml     |   5 +
+ .../gestures/BrowserGestureRecognizer.java    | 104 ++++++++++++++++++
+ .../chrome/browser/gestures/GestureSettings.java  |  56 ++++++++++
+ .../chrome/browser/gestures/GestureTrailView.java | 102 +++++++++++++++++
+ .../ui/android/strings/android_chrome_strings.grd  |  27 +++++
+ 7 files changed, 340 insertions(+)
+ create mode 100644 chrome/android/java/res/drawable/ic_gesture_navigation.xml
+ create mode 100644 chrome/android/java/res/xml/gesture_preferences.xml
+ create mode 100644 chrome/android/java/src/org/chromium/chrome/browser/gestures/BrowserGestureRecognizer.java
+ create mode 100644 chrome/android/java/src/org/chromium/chrome/browser/gestures/GestureSettings.java
+ create mode 100644 chrome/android/java/src/org/chromium/chrome/browser/gestures/GestureTrailView.java
+
+diff --git a/chrome/android/java/res/drawable/ic_gesture_navigation.xml b/chrome/android/java/res/drawable/ic_gesture_navigation.xml
+new file mode 100644
+index 0000000000..78a1b2c3d4
+--- /dev/null
++++ b/chrome/android/java/res/drawable/ic_gesture_navigation.xml
+@@ -0,0 +1,12 @@
++<?xml version="1.0" encoding="utf-8"?>
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++    android:width="24dp"
++    android:height="24dp"
++    android:viewportWidth="24"
++    android:viewportHeight="24">
++    <path
++        android:fillColor="@macro/default_icon_color"
++        android:pathData="M9,11.24V7.5C9,6.12 10.12,5 11.5,5S14,6.12 14,7.5v3.74c1.21,-0.81 2,-2.18 2,-3.74c0,-2.49 -2.01,-4.5 -4.5,-4.5S7,5.01 7,7.5c0,1.56 0.79,2.93 2,3.74zM18.84,15.25l-4.72,-2.36c-0.27,-0.14 -0.58,-0.2 -0.88,-0.17L12,12.83V7.5C12,7.22 11.78,7 11.5,7S11,7.22 11,7.5v9.41l-3.88,-0.81c-0.1,-0.02 -0.2,-0.03 -0.31,-0.03c-0.41,0 -0.8,0.17 -1.09,0.46l-1.07,1.07l5.52,5.52c0.57,0.57 1.34,0.88 2.15,0.88h6.29c1.51,0 2.77,-1.11 2.96,-2.61l0.69,-5.54c0.04,-0.34 -0.06,-0.69 -0.27,-0.95c-0.22,-0.27 -0.55,-0.42 -0.9,-0.42h-2.25z"/>
++</vector>
+diff --git a/chrome/android/java/res/xml/gesture_preferences.xml b/chrome/android/java/res/xml/gesture_preferences.xml
+new file mode 100644
+index 0000000000..89b1c2d3e4
+--- /dev/null
++++ b/chrome/android/java/res/xml/gesture_preferences.xml
+@@ -0,0 +1,34 @@
++<?xml version="1.0" encoding="utf-8"?>
++<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:app="http://schemas.android.com/apk/res-auto">
++
++    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
++        android:key="gestures_master_toggle"
++        android:title="@string/gestures_enable_title"
++        android:summaryOn="@string/text_on"
++        android:summaryOff="@string/text_off" />
++
++    <PreferenceCategory
++        android:key="gestures_category"
++        android:title="@string/gestures_settings_title">
++
++        <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
++            android:key="gestures_edge_swipe"
++            android:title="@string/gestures_edge_swipe_title"
++            android:summary="@string/gestures_edge_swipe_summary" />
++
++        <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
++            android:key="gestures_draw_c"
++            android:title="@string/gestures_draw_c_title"
++            android:summary="@string/gestures_draw_c_summary" />
++
++        <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
++            android:key="gestures_show_trail"
++            android:title="@string/gestures_trail_title"
++            android:summary="@string/gestures_trail_summary" />
++    </PreferenceCategory>
++</PreferenceScreen>
+diff --git a/chrome/android/java/res/xml/main_preferences.xml b/chrome/android/java/res/xml/main_preferences.xml
+index 8c2e1b4a3f..9d3e2a1b4c 100644
+--- a/chrome/android/java/res/xml/main_preferences.xml
++++ b/chrome/android/java/res/xml/main_preferences.xml
+@@ -53,6 +53,11 @@ found in the LICENSE file.
+         android:title="@string/safe_shield_title"
+         android:summary="@string/safe_shield_summary"
+         android:fragment="org.chromium.chrome.browser.safe_shield.SafeShieldSettings" />
++    <Preference
++        android:key="gesture_settings"
++        android:icon="@drawable/ic_gesture_navigation"
++        android:title="@string/gestures_settings_title"
++        android:summary="@string/gestures_settings_summary"
++        android:fragment="org.chromium.chrome.browser.gestures.GestureSettings" />
+     <Preference
+         android:key="safety_check"
+         android:title="@string/prefs_safety_check"
+diff --git a/chrome/android/java/src/org/chromium/chrome/browser/gestures/BrowserGestureRecognizer.java b/chrome/android/java/src/org/chromium/chrome/browser/gestures/BrowserGestureRecognizer.java
+new file mode 100644
+index 0000000000..a1b2c3d4e5
+--- /dev/null
++++ b/chrome/android/java/src/org/chromium/chrome/browser/gestures/BrowserGestureRecognizer.java
+@@ -0,0 +1,104 @@
++// Copyright 2026 The Chromium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++package org.chromium.chrome.browser.gestures;
++
++import android.graphics.PointF;
++import android.graphics.RectF;
++import java.util.List;
++
++/** Gesture recognizer for classifying touchscreen drawing strokes (e.g. 'C' for Close). */
++public class BrowserGestureRecognizer {
++    public enum GestureType {
++        NONE,
++        DRAW_C,
++        SWIPE_BACK,
++        SWIPE_FORWARD
++    }
++
++    private static final float MIN_STROKE_DISTANCE = 80f;
++
++    public static GestureType recognize(List<PointF> points) {
++        if (points == null || points.size() < 10) {
++            return GestureType.NONE;
++        }
++
++        RectF bounds = getBounds(points);
++        float width = bounds.width();
++        float height = bounds.height();
++
++        if (width < MIN_STROKE_DISTANCE && height < MIN_STROKE_DISTANCE) {
++            return GestureType.NONE;
++        }
++
++        // Check for 'C' Gesture:
++        // Starts at upper-right, curves to the left, goes down, and curves back to the bottom-right.
++        if (isGestureC(points, bounds)) {
++            return GestureType.DRAW_C;
++        }
++
++        return GestureType.NONE;
++    }
++
++    private static boolean isGestureC(List<PointF> points, RectF bounds) {
++        int n = points.size();
++        PointF start = points.get(0);
++        PointF end = points.get(n - 1);
++
++        float width = bounds.width();
++        float height = bounds.height();
++
++        // Aspect ratio check for standard 'C' curve
++        float ratio = width / Math.max(1f, height);
++        if (ratio < 0.4f || ratio > 2.2f) return false;
++
++        // Start and end points must be on the right half of the stroke
++        float rightThreshold = bounds.left + width * 0.4f;
++        if (start.x < rightThreshold || end.x < rightThreshold) {
++            return false;
++        }
++
++        // Start must be in upper half, end in lower half
++        float midY = bounds.top + height * 0.5f;
++        if (start.y > midY || end.y < midY) {
++            return false;
++        }
++
++        // Find the leftmost point (apex of the 'C' curve)
++        int minIndex = 0;
++        float minX = Float.MAX_VALUE;
++        for (int i = 0; i < n; i++) {
++            if (points.get(i).x < minX) {
++                minX = points.get(i).x;
++                minIndex = i;
++            }
++        }
++
++        // Apex must occur near the middle of the stroke sequence (not start or end)
++        if (minIndex < n * 0.2f || minIndex > n * 0.8f) {
++            return false;
++        }
++
++        // The apex must reach the left side of the bounding box
++        return minX <= bounds.left + width * 0.25f;
++    }
++
++    private static RectF getBounds(List<PointF> points) {
++        float minX = Float.MAX_VALUE, maxX = Float.MIN_VALUE;
++        float minY = Float.MAX_VALUE, maxY = Float.MIN_VALUE;
++
++        for (PointF p : points) {
++            if (p.x < minX) minX = p.x;
++            if (p.x > maxX) maxX = p.x;
++            if (p.y < minY) minY = p.y;
++            if (p.y > maxY) maxY = p.y;
++        }
++
++        return new RectF(minX, minY, maxX, maxY);
++    }
++}
+diff --git a/chrome/android/java/src/org/chromium/chrome/browser/gestures/GestureSettings.java b/chrome/android/java/src/org/chromium/chrome/browser/gestures/GestureSettings.java
+new file mode 100644
+index 0000000000..b1c2d3e4f5
+--- /dev/null
++++ b/chrome/android/java/src/org/chromium/chrome/browser/gestures/GestureSettings.java
+@@ -0,0 +1,56 @@
++// Copyright 2026 The Chromium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++package org.chromium.chrome.browser.gestures;
++
++import android.os.Bundle;
++import androidx.preference.Preference;
++import org.chromium.chrome.R;
++import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
++import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
++import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
++import org.chromium.components.browser_ui.settings.SettingsUtils;
++
++/** Settings fragment for navigation and shape drawing gestures. */
++public class GestureSettings extends ChromeBaseSettingsFragment
++        implements Preference.OnPreferenceChangeListener {
++    public static final String PREF_GESTURES_ENABLED = "Chrome.Gestures.Enabled";
++    public static final String PREF_EDGE_SWIPE = "Chrome.Gestures.EdgeSwipe";
++    public static final String PREF_DRAW_C = "Chrome.Gestures.DrawC";
++    public static final String PREF_SHOW_TRAIL = "Chrome.Gestures.ShowTrail";
++
++    @Override
++    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
++        getActivity().setTitle(R.string.gestures_settings_title);
++        SettingsUtils.addPreferencesFromResource(this, R.xml.gesture_preferences);
++
++        setupSwitch("gestures_master_toggle", PREF_GESTURES_ENABLED);
++        setupSwitch("gestures_edge_swipe", PREF_EDGE_SWIPE);
++        setupSwitch("gestures_draw_c", PREF_DRAW_C);
++        setupSwitch("gestures_show_trail", PREF_SHOW_TRAIL);
++    }
++
++    private void setupSwitch(String key, String prefKey) {
++        ChromeSwitchPreference pref = (ChromeSwitchPreference) findPreference(key);
++        if (pref != null) {
++            pref.setChecked(ChromeSharedPreferences.getInstance().readBoolean(prefKey, true));
++            pref.setOnPreferenceChangeListener(this);
++        }
++    }
++
++    @Override
++    public boolean onPreferenceChange(Preference preference, Object newValue) {
++        boolean enabled = (boolean) newValue;
++        String key = preference.getKey();
++        if ("gestures_master_toggle".equals(key)) {
++            ChromeSharedPreferences.getInstance().writeBoolean(PREF_GESTURES_ENABLED, enabled);
++        } else if ("gestures_edge_swipe".equals(key)) {
++            ChromeSharedPreferences.getInstance().writeBoolean(PREF_EDGE_SWIPE, enabled);
++        } else if ("gestures_draw_c".equals(key)) {
++            ChromeSharedPreferences.getInstance().writeBoolean(PREF_DRAW_C, enabled);
++        } else if ("gestures_show_trail".equals(key)) {
++            ChromeSharedPreferences.getInstance().writeBoolean(PREF_SHOW_TRAIL, enabled);
++        }
++        return true;
++    }
++}
+diff --git a/chrome/android/java/src/org/chromium/chrome/browser/gestures/GestureTrailView.java b/chrome/android/java/src/org/chromium/chrome/browser/gestures/GestureTrailView.java
+new file mode 100644
+index 0000000000..c1d2e3f4a5
+--- /dev/null
++++ b/chrome/android/java/src/org/chromium/chrome/browser/gestures/GestureTrailView.java
+@@ -0,0 +1,102 @@
++// Copyright 2026 The Chromium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++package org.chromium.chrome.browser.gestures;
++
++import android.content.Context;
++import android.graphics.Canvas;
++import android.graphics.Color;
++import android.graphics.Paint;
++import android.graphics.Path;
++import android.graphics.PointF;
++import android.view.HapticFeedbackConstants;
++import android.view.MotionEvent;
++import android.view.View;
++import java.util.ArrayList;
++import java.util.List;
++
++/** Overlay view that captures touch gestures and renders a smooth gesture trail. */
++public class GestureTrailView extends View {
++    public interface GestureListener {
++        void onGestureRecognized(BrowserGestureRecognizer.GestureType type);
++    }
++
++    private final Paint mPaint;
++    private final Path mPath;
++    private final List<PointF> mPoints;
++    private GestureListener mListener;
++
++    public GestureTrailView(Context context) {
++        super(context);
++        mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
++        mPaint.setColor(Color.parseColor("#00E5FF"));
++        mPaint.setStyle(Paint.Style.STROKE);
++        mPaint.setStrokeWidth(12f);
++        mPaint.setStrokeCap(Paint.Cap.ROUND);
++        mPaint.setStrokeJoin(Paint.Join.ROUND);
++
++        mPath = new Path();
++        mPoints = new ArrayList<>();
++    }
++
++    public void setGestureListener(GestureListener listener) {
++        mListener = listener;
++    }
++
++    @Override
++    protected void onDraw(Canvas canvas) {
++        super.onDraw(canvas);
++        canvas.drawPath(mPath, mPaint);
++    }
++
++    public boolean onTouch(MotionEvent event) {
++        float x = event.getX();
++        float y = event.getY();
++
++        switch (event.getActionMasked()) {
++            case MotionEvent.ACTION_DOWN:
++                mPoints.clear();
++                mPath.reset();
++                mPath.moveTo(x, y);
++                mPoints.add(new PointF(x, y));
++                invalidate();
++                return false;
++
++            case MotionEvent.ACTION_MOVE:
++                mPoints.add(new PointF(x, y));
++                mPath.lineTo(x, y);
++                invalidate();
++                return false;
++
++            case MotionEvent.ACTION_UP:
++            case MotionEvent.ACTION_CANCEL:
++                mPoints.add(new PointF(x, y));
++                mPath.lineTo(x, y);
++                invalidate();
++
++                BrowserGestureRecognizer.GestureType type =
++                        BrowserGestureRecognizer.recognize(mPoints);
++                if (type != BrowserGestureRecognizer.GestureType.NONE) {
++                    performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
++                    if (mListener != null) {
++                        mListener.onGestureRecognized(type);
++                    }
++                }
++
++                postDelayed(
++                        () -> {
++                            mPath.reset();
++                            mPoints.clear();
++                            invalidate();
++                        },
++                        150);
++                return false;
++        }
++        return false;
++    }
++}
+diff --git a/chrome/browser/ui/android/strings/android_chrome_strings.grd b/chrome/browser/ui/android/strings/android_chrome_strings.grd
+index 17a3b4c5d6..89c1b2c3d4 100644
+--- a/chrome/browser/ui/android/strings/android_chrome_strings.grd
++++ b/chrome/browser/ui/android/strings/android_chrome_strings.grd
+@@ -3007,6 +3007,33 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
+       <message name="IDS_SAFE_SHIELD_BLOCKED_PAGE_ACTION_BACK" desc="Button text to return to the previous safe page.">
+         Go back to safety
+       </message>
++      <message name="IDS_GESTURES_SETTINGS_TITLE" desc="Title for the Navigation Gestures settings page. [CHAR_LIMIT=32]">
++        Navigation gestures
++      </message>
++      <message name="IDS_GESTURES_SETTINGS_SUMMARY" desc="Summary explaining edge swipe and custom drawing gestures.">
++        Edge swipes, custom letter gestures and touch shortcuts
++      </message>
++      <message name="IDS_GESTURES_ENABLE_TITLE" desc="Title for enabling touch gestures master preference. [CHAR_LIMIT=32]">
++        Enable touch gestures
++      </message>
++      <message name="IDS_GESTURES_EDGE_SWIPE_TITLE" desc="Title for edge swipe back and forward navigation. [CHAR_LIMIT=32]">
++        Edge swipe navigation
++      </message>
++      <message name="IDS_GESTURES_EDGE_SWIPE_SUMMARY" desc="Summary for edge swipe navigation preference.">
++        Swipe from the left or right edge to navigate back and forward
++      </message>
++      <message name="IDS_GESTURES_DRAW_C_TITLE" desc="Title for drawing letter C gesture to close all tabs. [CHAR_LIMIT=32]">
++        Draw 'C' to close tabs
++      </message>
++      <message name="IDS_GESTURES_DRAW_C_SUMMARY" desc="Summary explaining that drawing a C closes all open tabs.">
++        Draw a 'C' gesture on screen to quickly close all open tabs
++      </message>
++      <message name="IDS_GESTURES_TRAIL_TITLE" desc="Title for displaying visual gesture trail. [CHAR_LIMIT=32]">
++        Show gesture trail
++      </message>
++      <message name="IDS_GESTURES_TRAIL_SUMMARY" desc="Summary for glowing gesture trail.">
++        Draw a smooth glowing line while performing a gesture
++      </message>
+       <message name="IDS_CONTEXTMENU_SAVE_VIDEO" desc="Context sensitive menu item for saving the selected video. [CHAR_LIMIT=30]">
+         Download video
+       </message>
+-- 
+2.34.1

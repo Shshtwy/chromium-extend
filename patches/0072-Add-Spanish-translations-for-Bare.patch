@@ -1,11 +1,12 @@
 From 1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
-Date: Fri, 21 Aug 2026 23:07:00 +0000
-Subject: [PATCH 71/71] Add Spanish translations for Bare
+Date: Fri, 21 Aug 2026 23:16:00 +0000
+Subject: [PATCH 72/72] Add Spanish translations for Bare
 
 Translates all new and custom interface strings introduced across the patch series into
 Spanish (Castilian and Latin American):
 
+- Navigation gestures, edge swipes, and letter 'C' (Close/Cerrar) gesture preferences
 - Safe Shield anti-porn filter, SafeSearch enforcer, and Family DoH preferences
 - External download manager settings and chooser
 - Adaptive toolbar shortcut note
@@ -18,11 +19,11 @@ Spanish (Castilian and Latin American):
 ---
  .../res_chromium_base/values-es/channel_constants.xml   | 18 ++++++++++++++++++
  .../values-es-rUS/channel_constants.xml                 | 18 ++++++++++++++++++
- .../strings/translations/android_chrome_strings_es-419.xtb  | 35 +++++++++++++++++++++++++++++++++++
- .../strings/translations/android_chrome_strings_es.xtb      | 35 +++++++++++++++++++++++++++++++++++
- 4 files changed, 106 insertions(+)
+ .../strings/translations/android_chrome_strings_es-419.xtb  | 44 ++++++++++++++++++++++++++++++++++++++++++++
+ .../strings/translations/android_chrome_strings_es.xtb      | 44 ++++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 124 insertions(+)
  create mode 100644 chrome/android/java/res_chromium_base/values-es/channel_constants.xml
- create mode 100644 chrome/android/java/res_chromium_base/values-es/channel_constants.xml
+ create mode 100644 chrome/android/java/res_chromium_base/values-es-rUS/channel_constants.xml
 
 diff --git a/chrome/android/java/res_chromium_base/values-es/channel_constants.xml b/chrome/android/java/res_chromium_base/values-es/channel_constants.xml
 new file mode 100644
@@ -73,10 +74,10 @@ sin los añadidos que nadie pidió.</string>
 +    <string name="bare_welcome_opt_background_media">Reproducción en segundo plano</string>
 +</resources>
 +diff --git a/chrome/browser/ui/android/strings/translations/android_chrome_strings_es-419.xtb b/chrome/browser/ui/android/strings/translations/android_chrome_strings_es-419.xtb
-+index 0da39cd..4581239 100644
++index 0da39cd..3458921 100644
 --- a/chrome/browser/ui/android/strings/translations/android_chrome_strings_es-419.xtb
 +++ b/chrome/browser/ui/android/strings/translations/android_chrome_strings_es-419.xtb
-@@ -2078,4 +2078,39 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
+@@ -2078,4 +2078,48 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
  <translation id="992745192656291733"><ph name="TAB_COUNT" /> pestañas</translation>
  <translation id="996149300115483134">Se cerró el menú de la tarjeta de feed</translation>
  <translation id="99907655649633293"><ph name="TAB_TITLE" />, pestaña de incógnito</translation>
@@ -113,15 +114,24 @@ sin los añadidos que nadie pidió.</string>
 +<translation id="6624606344101361479">Acceso Bloqueado por el Modo Seguro</translation>
 +<translation id="1369396702746928191">Este sitio web ha sido restringido porque contiene contenido para adultos o explícito prohibido por tus ajustes de seguridad.</translation>
 +<translation id="2115373342868939226">Volver a un sitio seguro</translation>
++<translation id="9037787370063876122">Gestos de navegación</translation>
++<translation id="734737034558540059">Deslizamientos de borde, gestos de letras personalizados y atajos táctiles</translation>
++<translation id="2056735162384317953">Activar gestos táctiles</translation>
++<translation id="5811867427868148120">Navegación por deslizamiento de borde</translation>
++<translation id="4197781744249061238">Desliza desde el borde izquierdo o derecho para ir atrás y adelante</translation>
++<translation id="7777099061902072298">Dibujar 'C' para cerrar pestañas</translation>
++<translation id="2721818192714491542">Dibuja un gesto en 'C' (Cerrar / Close) en pantalla para cerrar todas las pestañas abiertas</translation>
++<translation id="4703108607795874791">Mostrar estela del trazo</translation>
++<translation id="3875998937004566122">Dibuja una línea suave e iluminada mientras realizas un gesto</translation>
 +<translation id="3597643936473848801">Información sobre Bare</translation>
 +<translation id="7522588970079368833">Personaliza y controla Bare con un elemento destacado</translation>
  </translationbundle>
 \ No newline at end of file
 diff --git a/chrome/browser/ui/android/strings/translations/android_chrome_strings_es.xtb b/chrome/browser/ui/android/strings/translations/android_chrome_strings_es.xtb
-index 5413414..7812948 100644
+index 5413414..8912347 100644
 --- a/chrome/browser/ui/android/strings/translations/android_chrome_strings_es.xtb
 +++ b/chrome/browser/ui/android/strings/translations/android_chrome_strings_es.xtb
-@@ -2078,4 +2078,39 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
+@@ -2078,4 +2078,48 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
  <translation id="992745192656291733"><ph name="TAB_COUNT" /> pestañas</translation>
  <translation id="996149300115483134">El menú de la tarjeta del feed está cerrado</translation>
  <translation id="99907655649633293"><ph name="TAB_TITLE" />, pestaña de Incógnito</translation>
@@ -158,6 +168,15 @@ index 5413414..7812948 100644
 +<translation id="6624606344101361479">Acceso Bloqueado por el Modo Seguro</translation>
 +<translation id="1369396702746928191">Este sitio web ha sido restringido porque contiene contenido para adultos o explícito prohibido por tus ajustes de seguridad.</translation>
 +<translation id="2115373342868939226">Volver a un sitio seguro</translation>
++<translation id="9037787370063876122">Gestos de navegación</translation>
++<translation id="734737034558540059">Deslizamientos de borde, gestos de letras personalizados y atajos táctiles</translation>
++<translation id="2056735162384317953">Activar gestos táctiles</translation>
++<translation id="5811867427868148120">Navegación por deslizamiento de borde</translation>
++<translation id="4197781744249061238">Desliza desde el borde izquierdo o derecho para ir atrás y adelante</translation>
++<translation id="7777099061902072298">Dibujar 'C' para cerrar pestañas</translation>
++<translation id="2721818192714491542">Dibuja un gesto en 'C' (Cerrar / Close) en pantalla para cerrar todas las pestañas abiertas</translation>
++<translation id="4703108607795874791">Mostrar estela del trazo</translation>
++<translation id="3875998937004566122">Dibuja una línea suave e iluminada mientras realizas un gesto</translation>
 +<translation id="3597643936473848801">Información sobre Bare</translation>
 +<translation id="7522588970079368833">Personaliza y controla Bare con un elemento destacado</translation>
  </translationbundle>
