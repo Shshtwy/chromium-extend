@@ -33,3 +33,8 @@ args.gn.*
 *.jks
 *.keystore
 .bare-signing/
+
+# Python cache
+__pycache__/
+*.py[cod]
+

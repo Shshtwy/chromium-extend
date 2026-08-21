@@ -1,0 +1,32 @@
+name: Patch Auditor & Build Readiness CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  audit-patches:
+    name: Audit Patches & Integrity
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run Patch Sequence and Integrity Auditor
+        run: |
+          chmod +x tools/audit-patches.py
+          python3 tools/audit-patches.py
+
+      - name: Validate Version Code & Output
+        run: |
+          python3 tools/version.py code
+          python3 tools/version.py name
+          python3 tools/version.py gn

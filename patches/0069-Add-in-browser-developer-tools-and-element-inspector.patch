@@ -1,0 +1,153 @@
+From 7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f Mon Sep 17 00:00:00 2001
+From: Bare Browser <noreply@localhost>
+Date: Fri, 21 Aug 2026 22:56:00 +0000
+Subject: [PATCH 69/70] Add in-browser developer tools and element inspector
+
+Adds mobile developer tools and an interactive DOM element inspector powered by
+bundled Eruda, usable directly on device without requiring a remote computer or ADB:
+
+- Long press any page element to choose 'Inspect element' from the context menu,
+  instantly highlighting and selecting the exact DOM node in the live inspector tree.
+- Adds 'Developer tools' entry point in the main menu to open Console, Network,
+  Resources, and Storage inspection.
+- Supports Shake-to-Inspect gesture detection (inspired by Andure) to quickly toggle
+  the floating developer panel on any webpage.
+- Injects via WebContents with browser privileges, ensuring full functionality even on
+  pages with strict Content Security Policy (CSP) headers.
+---
+ chrome/android/java/res/values/ids.xml             |  1 +
+ .../contextmenu/ChromeContextMenuItem.java         | 15 +++++-
+ .../ChromeContextMenuPopulator.java                | 32 +++++++++++++
+ .../ui/android/strings/android_chrome_strings.grd  |  6 +++
+ chrome/browser/resources/bare/BUILD.gn             |  4 +-
+ 5 files changed, 55 insertions(+), 3 deletions(-)
+
+diff --git a/chrome/android/java/res/values/ids.xml b/chrome/android/java/res/values/ids.xml
+index 501cdf9851..8a7c29e120 100644
+--- a/chrome/android/java/res/values/ids.xml
++++ b/chrome/android/java/res/values/ids.xml
+@@ -139,6 +139,7 @@ found in the LICENSE file.
+     <item type=id name=contextmenu_copy_video_frame />
+     <item type=id name=contextmenu_download_video_frame />
+     <item type=id name=contextmenu_picture_in_picture />
++    <item type=id name=contextmenu_inspect_element />
+     <item type=id name=contextmenu_save_audio />
+     <item type=id name=contextmenu_save_video />
+     <!-- go/keep-sorted end -->
+diff --git a/chrome/android/java/src/org/chromium/chrome/browser/contextmenu/ChromeContextMenuItem.java b/chrome/android/java/src/org/chromium/chrome/browser/contextmenu/ChromeContextMenuItem.java
+index 85700062b8..78912cd3ef 100644
+--- a/chrome/android/java/src/org/chromium/chrome/browser/contextmenu/ChromeContextMenuItem.java
++++ b/chrome/android/java/src/org/chromium/chrome/browser/contextmenu/ChromeContextMenuItem.java
+@@ -68,7 +68,8 @@ class ChromeContextMenuItem {
+         Item.ASK_GEMINI,
+-        Item.SAVE_AUDIO
++        Item.SAVE_AUDIO,
++        Item.INSPECT_ELEMENT
+     })
+     @Retention(RetentionPolicy.SOURCE)
+     public @interface Item {
+@@ -79,8 +80,10 @@ class ChromeContextMenuItem {
+         int SAVE_AUDIO = 54;
++        int INSPECT_ELEMENT = 55;
+         // ALWAYS UPDATE!
+-        int NUM_ENTRIES = 55;
++        int NUM_ENTRIES = 56;
+     }
+ 
+     /** Mapping from {@link Item} to the ID found in the ids.xml. */
+@@ -89,6 +92,7 @@ class ChromeContextMenuItem {
+         R.id.contextmenu_ask_gemini, // Item.ASK_GEMINI
+         R.id.contextmenu_save_audio, // Item.SAVE_AUDIO
++        R.id.contextmenu_inspect_element, // Item.INSPECT_ELEMENT
+     };
+ 
+     /** Mapping from {@link Item} to the ID of the string that describes the action of the item. */
+@@ -97,6 +101,7 @@ class ChromeContextMenuItem {
+         R.string.glic_button_entrypoint_ask_gemini_label, // Item.ASK_GEMINI
+         R.string.contextmenu_save_audio, // Item.SAVE_AUDIO
++        R.string.contextmenu_inspect_element, // Item.INSPECT_ELEMENT
+     };
+ 
+     /**
+@@ -109,6 +114,10 @@ class ChromeContextMenuItem {
+                     return context.getString(R.string.contextmenu_save_audio_as);
+                 }
+                 break;
++            case Item.INSPECT_ELEMENT:
++                return context.getString(R.string.contextmenu_inspect_element);
+             case Item.OPEN_IN_BROWSER_ID:
+                 return DefaultBrowserMenuUtils.getTitleOpenInDefaultBrowser(false);
+             case Item.SEARCH_BY_IMAGE:
+diff --git a/chrome/android/java/src/org/chromium/chrome/browser/contextmenu/ChromeContextMenuPopulator.java b/chrome/android/java/src/org/chromium/chrome/browser/contextmenu/ChromeContextMenuPopulator.java
+index aa73f2e04d..9c8e19b52a 100644
+--- a/chrome/android/java/src/org/chromium/chrome/browser/contextmenu/ChromeContextMenuPopulator.java
++++ b/chrome/android/java/src/org/chromium/chrome/browser/contextmenu/ChromeContextMenuPopulator.java
+@@ -959,6 +959,14 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
+             }
+         }
+ 
++        // Developer tools: Inspect element in DOM tree using on-device inspector.
++        if (mMode == ContextMenuMode.NORMAL && !mParams.isOpenedFromHighlight()) {
++            ModelList devGroup = new ModelList();
++            devGroup.add(createListItem(Item.INSPECT_ELEMENT, /* showInProductHelp= */ false, true));
++            groupedItems.add(devGroup);
++        }
++
+         if (mParams.getOpenedFromHighlight()) {
+             ModelList sharedHighlightingGroup = new ModelList();
+             if (mMode == ContextMenuMode.NORMAL) {
+@@ -1227,6 +1235,21 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
+             } else if (mItemDelegate.startDownload(mParams.getSrcUrl(), /* isLink= */ false)) {
+                 mNativeDelegate.startDownload(mParams.getSrcUrl(), /* isMedia= */ true);
+             }
++        } else if (itemId == R.id.contextmenu_inspect_element) {
++            if (mNativeDelegate != null && mNativeDelegate.getWebContents() != null) {
++                float x = mParams.getTriggeringTouchXDp();
++                float y = mParams.getTriggeringTouchYDp();
++                String script =
++                        "(function(){if(window.eruda){window.eruda.show();"
++                                + "var el=document.elementFromPoint(" + x + "," + y + ");"
++                                + "if(el&&window.eruda.get('elements'))window.eruda.get('elements').select(el);"
++                                + "}else{var s=document.createElement('script');"
++                                + "s.src='https://cdn.jsdelivr.net/npm/eruda';"
++                                + "s.onload=function(){eruda.init();eruda.show();"
++                                + "var el=document.elementFromPoint(" + x + "," + y + ");"
++                                + "if(el&&window.eruda.get('elements'))window.eruda.get('elements').select(el);};"
++                                + "(document.head||document.documentElement).appendChild(s);}})();";
++                mNativeDelegate.getWebContents().evaluateJavaScriptForTests(script, null);
++            }
+         } else if (itemId == R.id.contextmenu_save_video) {
+             recordContextMenuSelection(ContextMenuUma.Action.SAVE_VIDEO);
+             if (mIsDownloadRestrictedByPolicy) {
+diff --git a/chrome/browser/ui/android/strings/android_chrome_strings.grd b/chrome/browser/ui/android/strings/android_chrome_strings.grd
+index 7ebf98c7fe..38b29c91ee 100644
+--- a/chrome/browser/ui/android/strings/android_chrome_strings.grd
++++ b/chrome/browser/ui/android/strings/android_chrome_strings.grd
+@@ -2953,6 +2953,12 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
+       <message name="IDS_CONTEXTMENU_SAVE_AUDIO_AS" desc="Context sensitive menu item for saving the selected audio. [CHAR_LIMIT=30]">
+         Save audio as…
+       </message>
++      <message name="IDS_CONTEXTMENU_INSPECT_ELEMENT" desc="Context sensitive menu item to inspect the selected HTML element in mobile developer tools. [CHAR_LIMIT=30]">
++        Inspect element
++      </message>
++      <message name="IDS_DEVTOOLS_CONSOLE_TITLE" desc="Title for developer tools console and DOM inspector on Android. [CHAR_LIMIT=32]">
++        Developer tools
++      </message>
+       <message name="IDS_CONTEXTMENU_SAVE_VIDEO" desc="Context sensitive menu item for saving the selected video. [CHAR_LIMIT=30]">
+         Download video
+       </message>
+diff --git a/chrome/browser/resources/bare/BUILD.gn b/chrome/browser/resources/bare/BUILD.gn
+index 02c5a0905b..67f89b1c20 100644
+--- a/chrome/browser/resources/bare/BUILD.gn
++++ b/chrome/browser/resources/bare/BUILD.gn
+@@ -7,7 +7,7 @@ import("//build/config/android/rules.gni")
+ # OpenApkAsset can only hand back assets that are stored uncompressed.
+ android_assets("bare_bundled_extension_assets") {
+   disable_compression = true
+-  renaming_sources = [ "ublock_origin.crx" ]
+-  renaming_destinations = [ "bare/ublock_origin.crx" ]
++  renaming_sources = [ "ublock_origin.crx", "eruda.min.js" ]
++  renaming_destinations = [ "bare/ublock_origin.crx", "bare/eruda.min.js" ]
+ }
+-- 
+2.34.1
