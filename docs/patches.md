@@ -73,6 +73,7 @@ themselves are in [`patches/`](../patches); this is the summary of what each one
 | 0066 | Follow range requests back to the whole file | A range-fetched URL names a slice, not the file, and audio is a separate track |
 | 0067 | Stop asking the user to sign in to a Google account | Six surfaces built the same promo; all six ask one method first |
 | 0068 | Let extension context menu items run their own command | The menu overwrote the listener extensions arrive with, so tapping one did nothing |
+| 0069 | Add Spanish interface translations | Spanish (es / es-419) translations for settings, media, downloads, audio and welcome onboarding |
 
 Patches 0001 and 0002 are bug fixes that happen to be prerequisites. 0003 is a usability fix.
 0004 through 0010 are the de-Googling, as are 0014 through 0021. 0011 through 0013 fix
