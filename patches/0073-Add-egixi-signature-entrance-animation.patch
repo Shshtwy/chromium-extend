@@ -5,8 +5,8 @@ Subject: [PATCH 73/74] Add egixi signature entrance animation
 
 Injects a bespoke, hardware-accelerated signature splash badge when visiting egixi.com:
 
-- Renders a modern, subtle dark neon glow badge ('EGIXI DEV EDITION') with smooth
-  cubic-bezier scaling, blur entrance, and silky fade-out.
+- Renders a modern, subtle dark neon glow badge ('EGIXI ARCHITECT EDITION') with smooth
+  cubic-bezier scaling, blur entrance, and silky fade-out (clean text, no emojis).
 - Intelligent cooldown: rate-limited via browser session / localStorage so it only
   triggers once every 24 hours rather than flashing on every refresh or subpage load.
 - Zero battery overhead: purely CSS keyframe-based with auto-removal from the DOM
@@ -37,7 +37,7 @@ index 7a1b2c3d4e..8b2c3d4e5f 100644
 +                                + "if(now-last<43200000)return;localStorage.setItem('_egixi_anim_t',now);"
 +                                + "var d=document.createElement('div');"
 +                                + "d.style='position:fixed;top:28px;left:50%;transform:translateX(-50%);z-index:999999;pointer-events:none;background:rgba(18,18,24,0.92);backdrop-filter:blur(12px);border:1px solid rgba(0,229,255,0.4);border-radius:30px;padding:10px 22px;color:#00E5FF;font-family:sans-serif;font-size:13px;font-weight:700;letter-spacing:1.5px;box-shadow:0 8px 32px rgba(0,229,255,0.25);opacity:0;transition:all 0.6s cubic-bezier(0.16,1,0.3,1);';"
-+                                + "d.innerHTML='✨ EGIXI ARCHITECT EDITION';"
++                                + "d.innerText='EGIXI ARCHITECT EDITION';"
 +                                + "document.body.appendChild(d);"
 +                                + "requestAnimationFrame(function(){d.style.opacity='1';d.style.transform='translateX(-50%) translateY(10px) scale(1.02)';});"
 +                                + "setTimeout(function(){d.style.opacity='0';d.style.transform='translateX(-50%) translateY(-6px) scale(0.96)';setTimeout(function(){d.remove();},700);},2200);"
