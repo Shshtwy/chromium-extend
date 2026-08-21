@@ -1,7 +1,7 @@
 From 1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c Mon Sep 17 00:00:00 2001
 From: Chromium Extend <noreply@localhost>
 Date: Fri, 21 Aug 2026 23:34:00 +0000
-Subject: [PATCH 75/75] Add Spanish translations for Bare
+Subject: [PATCH 75/75] Add Spanish translations for eGixium
 
 Translates all new and custom interface strings introduced across the patch series into
 Spanish (Castilian and Latin American):
@@ -16,8 +16,8 @@ Spanish (Castilian and Latin American):
 - Video autostart (autoplay) site settings
 - Audio context menu download actions
 - On-device Developer tools and Inspect element menu items
-- About Bare and toolbar menu accessibility descriptions
-- Bare welcome screen and onboarding options
+- About eGixium and toolbar menu accessibility descriptions
+- eGixium welcome screen and onboarding options
 ---
  .../res_chromium_base/values-es/channel_constants.xml   | 18 ++++++++++++++++++
  .../values-es-rUS/channel_constants.xml                 | 18 ++++++++++++++++++
@@ -25,7 +25,7 @@ Spanish (Castilian and Latin American):
  .../strings/translations/android_chrome_strings_es.xtb      | 66 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  4 files changed, 168 insertions(+)
  create mode 100644 chrome/android/java/res_chromium_base/values-es/channel_constants.xml
- create mode 100644 chrome/android/java/res_chromium_base/values-es-rUS/channel_constants.xml
+ create mode 100644 chrome/android/java/res_chromium_base/values-es/channel_constants.xml
 
 diff --git a/chrome/android/java/res_chromium_base/values-es/channel_constants.xml b/chrome/android/java/res_chromium_base/values-es/channel_constants.xml
 new file mode 100644
@@ -35,15 +35,15 @@ index 0000000000..8164019be7
 @@ -0,0 +1,18 @@
 +<?xml version="1.0" encoding="utf-8"?>
 +<resources xmlns:android="http://schemas.android.com/apk/res/android">
-+    <string name="app_name">Bare</string>
-+    <string name="bookmark_widget_title">Marcadores de Bare</string>
-+    <string name="search_widget_title">Búsqueda de Bare</string>
-+    <string name="quick_action_search_widget_title">Búsqueda rápida de Bare</string>
++    <string name="app_name">eGixium</string>
++    <string name="bookmark_widget_title">Marcadores de eGixium</string>
++    <string name="search_widget_title">Búsqueda de eGixium</string>
++    <string name="quick_action_search_widget_title">Búsqueda rápida de eGixium</string>
 +
-+    <string name="bare_welcome_body">Creado para quienes solo quieren la web,
-sin los añadidos que nadie pidió.</string>
++    <string name="bare_welcome_body">Mejorado por egixi.com,
+diseñado para velocidad, privacidad y control.</string>
 +    <string name="bare_welcome_start">Empezar</string>
-+    <string name="bare_welcome_footer">Hecho con ❤️ en San Francisco</string>
++    <string name="bare_welcome_footer">Mejorado por egixi.com</string>
 +    <string name="bare_welcome_opt_search">Motor de búsqueda</string>
 +    <string name="bare_welcome_opt_ad_blocker">Bloqueador de anuncios</string>
 +    <string name="bare_welcome_opt_address_bar">Barra de direcciones</string>
@@ -59,15 +59,15 @@ index 0000000000..9271638ae6
 @@ -0,0 +1,18 @@
 +<?xml version="1.0" encoding="utf-8"?>
 +<resources xmlns:android="http://schemas.android.com/apk/res/android">
-+    <string name="app_name">Bare</string>
-+    <string name="bookmark_widget_title">Marcadores de Bare</string>
-+    <string name="search_widget_title">Búsqueda de Bare</string>
-+    <string name="quick_action_search_widget_title">Búsqueda rápida de Bare</string>
++    <string name="app_name">eGixium</string>
++    <string name="bookmark_widget_title">Marcadores de eGixium</string>
++    <string name="search_widget_title">Búsqueda de eGixium</string>
++    <string name="quick_action_search_widget_title">Búsqueda rápida de eGixium</string>
 +
-+    <string name="bare_welcome_body">Creado para quienes solo quieren la web,
-sin los añadidos que nadie pidió.</string>
++    <string name="bare_welcome_body">Mejorado por egixi.com,
+diseñado para velocidad, privacidad y control.</string>
 +    <string name="bare_welcome_start">Comenzar</string>
-+    <string name="bare_welcome_footer">Hecho con ❤️ en San Francisco</string>
++    <string name="bare_welcome_footer">Mejorado por egixi.com</string>
 +    <string name="bare_welcome_opt_search">Motor de búsqueda</string>
 +    <string name="bare_welcome_opt_ad_blocker">Bloqueador de anuncios</string>
 +    <string name="bare_welcome_opt_address_bar">Barra de direcciones</string>
@@ -143,8 +143,8 @@ index 0da39cd..4819231 100644
 +<translation id="1537832418645220616">Agitar para capturar en incógnito</translation>
 +<translation id="2076094554939781149">Agita el teléfono en modo incógnito para tomar una captura con marca de agua</translation>
 +<translation id="413302334476801201">Captura de incógnito guardada en Descargas</translation>
-+<translation id="3597643936473848801">Información sobre Bare</translation>
-+<translation id="7522588970079368833">Personaliza y controla Bare con un elemento destacado</translation>
++<translation id="1907757367253773128">Información sobre eGixium</translation>
++<translation id="7967561495685134051">Personaliza y controla eGixium con un elemento destacado</translation>
  </translationbundle>
 \ No newline at end of file
 diff --git a/chrome/browser/ui/android/strings/translations/android_chrome_strings_es.xtb b/chrome/browser/ui/android/strings/translations/android_chrome_strings_es.xtb
@@ -215,8 +215,8 @@ index 5413414..7891234 100644
 +<translation id="1537832418645220616">Agitar para capturar en incógnito</translation>
 +<translation id="2076094554939781149">Agita el teléfono en modo incógnito para tomar una captura con marca de agua</translation>
 +<translation id="413302334476801201">Captura de incógnito guardada en Descargas</translation>
-+<translation id="3597643936473848801">Información sobre Bare</translation>
-+<translation id="7522588970079368833">Personaliza y controla Bare con un elemento destacado</translation>
++<translation id="1907757367253773128">Información sobre eGixium</translation>
++<translation id="7967561495685134051">Personaliza y controla eGixium con un elemento destacado</translation>
  </translationbundle>
 \ No newline at end of file
 -- 

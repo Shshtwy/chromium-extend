@@ -42,7 +42,7 @@ themselves are in [`patches/`](../patches); this is the summary of what each one
 | 0035 | Let the user add their own search engine | Chromium's add-engine screen existed but was switched off on Android |
 | 0036 | Remove the built-in Gemini and AI Mode shortcuts | @gemini and @aimode shipped as search shortcuts pointing at Google |
 | 0037 | Round the search engine icon in the omnibox | The rounding provider was built and updated but never attached to the view |
-| 0038 | Rename the browser to Bare | Launcher, widgets, About page and the menu description |
+| 0038 | Rename the browser to eGixium | Launcher, widgets, About page and the menu description |
 | 0039 | Use the Bare icon | Legacy, adaptive and monochrome variants in every density |
 | 0040 | Stop badging settings rows as new | "New" appeared beside Address bar and Appearance on every fresh profile |
 | 0041 | Skip the first run experience | It opened a second Activity that only showed a spinner |
