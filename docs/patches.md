@@ -76,7 +76,8 @@ themselves are in [`patches/`](../patches); this is the summary of what each one
 | 0069 | Add in-browser developer tools and element inspector | On-device DOM inspector and DevTools console powered by bundled Eruda |
 | 0070 | Add Safe Shield anti-porn family filter and SafeSearch | Intercepts explicit domains, enforces SafeSearch, Family DoH and parental panel |
 | 0071 | Add touch and letter navigation gestures | Edge swipes, gesture trail, and letter 'C' (Close) tab closure recognizer |
-| 0072 | Add Spanish interface translations | Spanish (es / es-419) translations for gestures, Safe Shield, settings, media, devtools and welcome onboarding |
+| 0072 | Add in-browser task manager and memory saver | Live tab memory inspector, traffic-light status, and process control |
+| 0073 | Add Spanish interface translations | Spanish (es / es-419) translations for task manager, gestures, security, settings, media, devtools and welcome onboarding |
 
 Patches 0001 and 0002 are bug fixes that happen to be prerequisites. 0003 is a usability fix.
 0004 through 0010 are the de-Googling, as are 0014 through 0021. 0011 through 0013 fix
