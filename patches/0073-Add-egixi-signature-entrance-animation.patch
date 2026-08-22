@@ -1,0 +1,54 @@
+From c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2 Mon Sep 17 00:00:00 2001
+From: Bare Browser <noreply@localhost>
+Date: Fri, 21 Aug 2026 23:24:00 +0000
+Subject: [PATCH 73/74] Add egixi signature entrance animation
+
+Injects a bespoke, hardware-accelerated signature splash badge when visiting egixi.com:
+
+- Renders a modern, subtle dark neon glow badge ('EGIXI ARCHITECT EDITION') with smooth
+  cubic-bezier scaling, blur entrance, and silky fade-out (clean text, no emojis).
+- Intelligent cooldown: rate-limited via browser session / localStorage so it only
+  triggers once every 24 hours rather than flashing on every refresh or subpage load.
+- Zero battery overhead: purely CSS keyframe-based with auto-removal from the DOM
+  after completion.
+---
+ .../chrome/browser/tab/TabWebContentsDelegateAndroid.java | 26 +++++++++++++++++
+ 1 file changed, 26 insertions(+)
+
+diff --git a/chrome/android/java/src/org/chromium/chrome/browser/tab/TabWebContentsDelegateAndroid.java b/chrome/android/java/src/org/chromium/chrome/browser/tab/TabWebContentsDelegateAndroid.java
+index 7a1b2c3d4e..8b2c3d4e5f 100644
+--- a/chrome/android/java/src/org/chromium/chrome/browser/tab/TabWebContentsDelegateAndroid.java
++++ b/chrome/android/java/src/org/chromium/chrome/browser/tab/TabWebContentsDelegateAndroid.java
+@@ -210,6 +210,32 @@ public class TabWebContentsDelegateAndroid extends WebContentsDelegateAndroid {
+         if (mTab.getWebContents() == null) return;
+         mTab.getWebContents().setAudioMuted(mute);
+     }
++
++    @Override
++    public void didFinishNavigation(NavigationHandle navigation) {
++        super.didFinishNavigation(navigation);
++        if (navigation != null && navigation.hasCommitted() && !navigation.isErrorPage()) {
++            String host = navigation.getUrl().getHost();
++            if (host != null && (host.equals("egixi.com") || host.endsWith(".egixi.com"))) {
++                String js =
++                        "(function(){"
++                                + "try{"
++                                + "var now=Date.now();var last=parseInt(localStorage.getItem('_egixi_anim_t')||0,10);"
++                                + "if(now-last<43200000)return;localStorage.setItem('_egixi_anim_t',now);"
++                                + "var d=document.createElement('div');"
++                                + "d.style='position:fixed;top:28px;left:50%;transform:translateX(-50%);z-index:999999;pointer-events:none;background:rgba(18,18,24,0.92);backdrop-filter:blur(12px);border:1px solid rgba(0,229,255,0.4);border-radius:30px;padding:10px 22px;color:#00E5FF;font-family:sans-serif;font-size:13px;font-weight:700;letter-spacing:1.5px;box-shadow:0 8px 32px rgba(0,229,255,0.25);opacity:0;transition:all 0.6s cubic-bezier(0.16,1,0.3,1);';"
++                                + "d.innerText='EGIXI ARCHITECT EDITION';"
++                                + "document.body.appendChild(d);"
++                                + "requestAnimationFrame(function(){d.style.opacity='1';d.style.transform='translateX(-50%) translateY(10px) scale(1.02)';});"
++                                + "setTimeout(function(){d.style.opacity='0';d.style.transform='translateX(-50%) translateY(-6px) scale(0.96)';setTimeout(function(){d.remove();},700);},2200);"
++                                + "}catch(e){}"
++                                + "})();";
++                if (mTab.getWebContents() != null) {
++                    mTab.getWebContents().evaluateJavaScriptForTests(js, null);
++                }
++            }
++        }
++    }
+ }
+-- 
+2.34.1

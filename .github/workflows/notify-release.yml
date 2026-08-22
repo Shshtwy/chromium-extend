@@ -1,0 +1,38 @@
+name: Release Alert to Telegram
+
+on:
+  release:
+    types: [published, edited, created]
+  workflow_dispatch:
+
+jobs:
+  notify-telegram:
+    name: Notify Telegram Channel
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Telegram Alert
+        run: |
+          TAG="${{ github.event.release.tag_name }}"
+          NAME="${{ github.event.release.name }}"
+          URL="${{ github.event.release.html_url }}"
+
+          [ -z "$TAG" ] && TAG="Manual-Trigger"
+          [ -z "$NAME" ] && NAME="eGixium Browser Release"
+          [ -z "$URL" ] && URL="https://github.com/NeoTurcios/chromium-extend/releases"
+
+          MSG=$(cat << MSGEOF
+          🚀 *eGixium Browser Release Update*
+
+          📦 *Tag:* \`${TAG}\`
+          📌 *Name:* ${NAME}
+          🔗 [View Release on GitHub](${URL})
+
+          ✨ *Status:* Artifacts updated in eGixium build laboratory.
+          MSGEOF
+          )
+
+          curl -s -X POST "https://api.telegram.org/bot8611182352:AAEGuUykvf5VpKO9As4suEwIarkeQqmLH0U/sendMessage" \
+            -d chat_id="-1003732911431" \
+            -d text="${MSG}" \
+            -d parse_mode="Markdown" \
+            -d disable_web_page_preview=false

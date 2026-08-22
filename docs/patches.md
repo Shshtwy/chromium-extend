@@ -42,7 +42,7 @@ themselves are in [`patches/`](../patches); this is the summary of what each one
 | 0035 | Let the user add their own search engine | Chromium's add-engine screen existed but was switched off on Android |
 | 0036 | Remove the built-in Gemini and AI Mode shortcuts | @gemini and @aimode shipped as search shortcuts pointing at Google |
 | 0037 | Round the search engine icon in the omnibox | The rounding provider was built and updated but never attached to the view |
-| 0038 | Rename the browser to Bare | Launcher, widgets, About page and the menu description |
+| 0038 | Rename the browser to eGixium | Launcher, widgets, About page and the menu description |
 | 0039 | Use the Bare icon | Legacy, adaptive and monochrome variants in every density |
 | 0040 | Stop badging settings rows as new | "New" appeared beside Address bar and Appearance on every fresh profile |
 | 0041 | Skip the first run experience | It opened a second Activity that only showed a spinner |
@@ -73,6 +73,13 @@ themselves are in [`patches/`](../patches); this is the summary of what each one
 | 0066 | Follow range requests back to the whole file | A range-fetched URL names a slice, not the file, and audio is a separate track |
 | 0067 | Stop asking the user to sign in to a Google account | Six surfaces built the same promo; all six ask one method first |
 | 0068 | Let extension context menu items run their own command | The menu overwrote the listener extensions arrive with, so tapping one did nothing |
+| 0069 | Add in-browser developer tools and element inspector | On-device DOM inspector and DevTools console powered by bundled Eruda |
+| 0070 | Add Safe Shield anti-porn family filter and SafeSearch | Intercepts explicit domains, enforces SafeSearch, Family DoH and parental panel |
+| 0071 | Add touch and letter navigation gestures | Edge swipes, gesture trail, and letter 'C' (Close) tab closure recognizer |
+| 0072 | Add in-browser task manager and memory saver | Live tab memory inspector, traffic-light status, and process control |
+| 0073 | Add egixi signature entrance animation | Sleek hardware-accelerated signature splash badge on egixi.com |
+| 0074 | Allow incognito screenshots with shake and watermark | Unlocks incognito screenshots, shake gesture, and discreet watermark |
+| 0075 | Add Spanish interface translations | Spanish (es / es-419) translations for incognito snapshots, task manager, gestures, security, settings |
 
 Patches 0001 and 0002 are bug fixes that happen to be prerequisites. 0003 is a usability fix.
 0004 through 0010 are the de-Googling, as are 0014 through 0021. 0011 through 0013 fix

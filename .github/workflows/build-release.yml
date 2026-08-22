@@ -1,0 +1,68 @@
+name: eGixium Release Builder
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version_tag:
+        description: 'Release Version Tag (e.g. v1.0.0-alpha.1)'
+        required: true
+        default: 'v1.0.0-alpha.1'
+
+permissions:
+  contents: write
+
+jobs:
+  audit-and-release:
+    name: Validate Patches & Prepare Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run Patch Sequence Auditor
+        run: |
+          chmod +x tools/audit-patches.py
+          python3 tools/audit-patches.py
+
+      - name: Calculate Version Metadata
+        id: version
+        run: |
+          VERSION_NAME=$(python3 tools/version.py name)
+          VERSION_CODE=$(python3 tools/version.py code)
+          echo "version_name=${VERSION_NAME}" >> $GITHUB_OUTPUT
+          echo "version_code=${VERSION_CODE}" >> $GITHUB_OUTPUT
+          echo "tag=${{ github.event.inputs.version_tag || github.ref_name }}" >> $GITHUB_OUTPUT
+
+      - name: Generate Release Notes
+        run: |
+          cat << 'NOTES' > /tmp/release_notes.md
+          # eGixium Browser Release
+
+          ### What's included in this build:
+          - **75 Sequential Custom Patches** cleanly integrated.
+          - **eGixium Branding & Spanish Localization**: Fully translated interface into Spanish (es / es-419).
+          - **Safe Shield Protection**: Early domain interception for adult content, enforced SafeSearch (Google/Bing/DuckDuckGo/YouTube), and DNS-over-HTTPS (Cloudflare Family 1.1.1.3).
+          - **In-Browser Task Manager & Memory Saver**: Real-time / on-demand tab memory inspector with traffic light indicators and process discard controls.
+          - **Vivaldi/Opera Touch Gestures**: Edge swipe back/forward, smooth neon gesture trail, and letter 'C' gesture to close tabs.
+          - **On-Device DevTools & DOM Inspector**: Standalone Eruda v3.4.1 console and element inspector via context menu and shake gesture.
+          - **Incognito Screenshots**: Screen capture unlocked in private tabs with custom watermark and shake-to-capture.
+          NOTES
+
+      - name: Publish to GitHub Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: "eGixium Browser ${{ steps.version.outputs.version_name }}"
+          body_path: /tmp/release_notes.md
+          draft: false
+          prerelease: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
