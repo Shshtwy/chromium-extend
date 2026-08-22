@@ -5,36 +5,34 @@ on:
     types: [published, edited, created]
   workflow_dispatch:
 
-permissions:
-  contents: read
-
 jobs:
   notify-telegram:
     name: Notify Telegram Channel
     runs-on: ubuntu-latest
     steps:
       - name: Send Telegram Alert
-        env:
-          BOT_TOKEN: "8611182352:AAEGuUykvf5VpKO9As4suEwIarkeQqmLH0U"
-          CHAT_ID: "-1003732911431"
-          RELEASE_TAG: "${{ github.event.release.tag_name }}"
-          RELEASE_NAME: "${{ github.event.release.name }}"
-          RELEASE_URL: "${{ github.event.release.html_url }}"
         run: |
-          TAG="${RELEASE_TAG:-Manual-Trigger}"
-          NAME="${RELEASE_NAME:-eGixium Browser Release}"
-          URL="${RELEASE_URL:-https://github.com/NeoTurcios/chromium-extend/releases}"
+          TAG="${{ github.event.release.tag_name }}"
+          NAME="${{ github.event.release.name }}"
+          URL="${{ github.event.release.html_url }}"
 
-          MSG="🚀 *eGixium Browser Release Update*
+          [ -z "$TAG" ] && TAG="Manual-Trigger"
+          [ -z "$NAME" ] && NAME="eGixium Browser Release"
+          [ -z "$URL" ] && URL="https://github.com/NeoTurcios/chromium-extend/releases"
 
-📦 *Tag:* \`${TAG}\`
-📌 *Name:* ${NAME}
-🔗 [View Release on GitHub](${URL})
+          MSG=$(cat << MSGEOF
+          🚀 *eGixium Browser Release Update*
 
-✨ *Status:* Artifacts updated in eGixium build laboratory."
+          📦 *Tag:* \`${TAG}\`
+          📌 *Name:* ${NAME}
+          🔗 [View Release on GitHub](${URL})
 
-          curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
-            -d chat_id="${CHAT_ID}" \
+          ✨ *Status:* Artifacts updated in eGixium build laboratory.
+          MSGEOF
+          )
+
+          curl -s -X POST "https://api.telegram.org/bot8611182352:AAEGuUykvf5VpKO9As4suEwIarkeQqmLH0U/sendMessage" \
+            -d chat_id="-1003732911431" \
             -d text="${MSG}" \
             -d parse_mode="Markdown" \
             -d disable_web_page_preview=false
