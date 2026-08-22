@@ -17,15 +17,19 @@ jobs:
         env:
           BOT_TOKEN: "8611182352:AAEGuUykvf5VpKO9As4suEwIarkeQqmLH0U"
           CHAT_ID: "-1003732911431"
-          RELEASE_TAG: "${{ github.event.release.tag_name || 'Manual-Test' }}"
-          RELEASE_NAME: "${{ github.event.release.name || 'eGixium Browser Release' }}"
-          RELEASE_URL: "${{ github.event.release.html_url || 'https://github.com/NeoTurcios/chromium-extend/releases' }}"
+          RELEASE_TAG: "${{ github.event.release.tag_name }}"
+          RELEASE_NAME: "${{ github.event.release.name }}"
+          RELEASE_URL: "${{ github.event.release.html_url }}"
         run: |
+          TAG="${RELEASE_TAG:-Manual-Trigger}"
+          NAME="${RELEASE_NAME:-eGixium Browser Release}"
+          URL="${RELEASE_URL:-https://github.com/NeoTurcios/chromium-extend/releases}"
+
           MSG="🚀 *eGixium Browser Release Update*
 
-📦 *Tag:* \`${RELEASE_TAG}\`
-📌 *Name:* ${RELEASE_NAME}
-🔗 [View Release on GitHub](${RELEASE_URL})
+📦 *Tag:* \`${TAG}\`
+📌 *Name:* ${NAME}
+🔗 [View Release on GitHub](${URL})
 
 ✨ *Status:* Artifacts updated in eGixium build laboratory."
 
