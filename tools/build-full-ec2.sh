@@ -166,6 +166,22 @@ if [ -f "$UNSIGNED_APK" ]; then
     echo "=== Uploading ${APK_NAME} to GitHub Release ${RELEASE_TAG} ==="
     gh release upload "${RELEASE_TAG}" "/work/${APK_NAME}" --repo NeoTurcios/chromium-extend --clobber
     echo "=== SUCCESS! ${APK_NAME} uploaded to GitHub Releases ==="
+
+    # Telegram notification
+    APK_SIZE=$(du -h "/work/${APK_NAME}" | cut -f1)
+    TG_MSG="🎉 *Build Complete & Published!*
+
+📱 *APK:* \`${APK_NAME}\`
+📦 *Size:* ${APK_SIZE}
+🏷 *Release:* \`${RELEASE_TAG}\`
+🔗 [Download from GitHub Releases](https://github.com/NeoTurcios/chromium-extend/releases/tag/${RELEASE_TAG})
+
+✨ eGixium Cloud Builder finished successfully."
+
+    curl -s -X POST "https://api.telegram.org/bot8611182352:AAEGuUykvf5VpKO9As4suEwIarkeQqmLH0U/sendMessage" \
+      -d chat_id="-1003732911431" \
+      -d text="${TG_MSG}" \
+      -d parse_mode="Markdown" || true
 else
     echo "ERROR: Could not find generated APK in out/eGixium/apks/"
     exit 1
