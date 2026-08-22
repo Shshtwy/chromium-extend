@@ -40,8 +40,7 @@ index cc1f2a30cb..b8760a5ae2 100644
 +    <string name="quick_action_search_widget_title" translatable="false">eGixium quick action search</string>
 +
 +    <!-- One-time welcome shown on the first launch after install. -->
-+    <string name="bare_welcome_body" translatable="false">Enhanced by egixi.com
-Made for speed, privacy and control.</string>
++    <string name="bare_welcome_body" translatable="false">Enhanced by egixi.com&#10;Made for speed, privacy and control.</string>
 +    <string name="bare_welcome_start" translatable="false">Start</string>
 +    <string name="bare_welcome_footer" translatable="false">Enhanced by egixi.com</string>
  </resources>

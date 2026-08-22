@@ -25,7 +25,7 @@ Spanish (Castilian and Latin American):
  .../strings/translations/android_chrome_strings_es.xtb      | 66 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  4 files changed, 168 insertions(+)
  create mode 100644 chrome/android/java/res_chromium_base/values-es/channel_constants.xml
- create mode 100644 chrome/android/java/res_chromium_base/values-es/channel_constants.xml
+ create mode 100644 chrome/android/java/res_chromium_base/values-es-rUS/channel_constants.xml
 
 diff --git a/chrome/android/java/res_chromium_base/values-es/channel_constants.xml b/chrome/android/java/res_chromium_base/values-es/channel_constants.xml
 new file mode 100644
@@ -40,8 +40,7 @@ index 0000000000..8164019be7
 +    <string name="search_widget_title">Búsqueda de eGixium</string>
 +    <string name="quick_action_search_widget_title">Búsqueda rápida de eGixium</string>
 +
-+    <string name="bare_welcome_body">Mejorado por egixi.com,
-diseñado para velocidad, privacidad y control.</string>
++    <string name="bare_welcome_body">Mejorado por egixi.com,&#10;diseñado para velocidad, privacidad y control.</string>
 +    <string name="bare_welcome_start">Empezar</string>
 +    <string name="bare_welcome_footer">Mejorado por egixi.com</string>
 +    <string name="bare_welcome_opt_search">Motor de búsqueda</string>
@@ -51,7 +50,7 @@ diseñado para velocidad, privacidad y control.</string>
 +    <string name="bare_welcome_opt_downloads">Gestor de descargas externo</string>
 +    <string name="bare_welcome_opt_background_media">Reproducción en segundo plano</string>
 +</resources>
-+diff --git a/chrome/android/java/res_chromium_base/values-es-rUS/channel_constants.xml b/chrome/android/java/res_chromium_base/values-es-rUS/channel_constants.xml
+diff --git a/chrome/android/java/res_chromium_base/values-es-rUS/channel_constants.xml b/chrome/android/java/res_chromium_base/values-es-rUS/channel_constants.xml
 new file mode 100644
 index 0000000000..9271638ae6
 --- /dev/null
@@ -64,8 +63,7 @@ index 0000000000..9271638ae6
 +    <string name="search_widget_title">Búsqueda de eGixium</string>
 +    <string name="quick_action_search_widget_title">Búsqueda rápida de eGixium</string>
 +
-+    <string name="bare_welcome_body">Mejorado por egixi.com,
-diseñado para velocidad, privacidad y control.</string>
++    <string name="bare_welcome_body">Mejorado por egixi.com,&#10;diseñado para velocidad, privacidad y control.</string>
 +    <string name="bare_welcome_start">Comenzar</string>
 +    <string name="bare_welcome_footer">Mejorado por egixi.com</string>
 +    <string name="bare_welcome_opt_search">Motor de búsqueda</string>
@@ -75,7 +73,7 @@ diseñado para velocidad, privacidad y control.</string>
 +    <string name="bare_welcome_opt_downloads">Gestor de descargas externo</string>
 +    <string name="bare_welcome_opt_background_media">Reproducción en segundo plano</string>
 +</resources>
-+diff --git a/chrome/browser/ui/android/strings/translations/android_chrome_strings_es-419.xtb b/chrome/browser/ui/android/strings/translations/android_chrome_strings_es-419.xtb
+diff --git a/chrome/browser/ui/android/strings/translations/android_chrome_strings_es-419.xtb b/chrome/browser/ui/android/strings/translations/android_chrome_strings_es-419.xtb
 index 0da39cd..4819231 100644
 --- a/chrome/browser/ui/android/strings/translations/android_chrome_strings_es-419.xtb
 +++ b/chrome/browser/ui/android/strings/translations/android_chrome_strings_es-419.xtb
