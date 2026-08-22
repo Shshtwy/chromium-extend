@@ -5,16 +5,38 @@ set -ex
 # eGixium Automated Full Chromium Android Cloud Builder
 # ==============================================================================
 
+export HOME=/root
+export USER=root
+export DEBIAN_FRONTEND=noninteractive
+
+RELEASE_TAG="v1.0.0-alpha.1"
+
+# Guarantee auto-termination and log upload on exit (success or failure)
+on_exit() {
+    EXIT_CODE=$?
+    echo "=== Build finished with code ${EXIT_CODE} at $(date) ==="
+    if [ -f /var/log/egixium-full-build.log ]; then
+        gh release upload "${RELEASE_TAG}" /var/log/egixium-full-build.log --repo NeoTurcios/chromium-extend --clobber || true
+    fi
+    echo "Terminating instance now..."
+    shutdown -h now
+}
+trap on_exit EXIT
+
 exec > >(tee -a /var/log/egixium-full-build.log) 2>&1
 echo "=== Starting Full eGixium Cloud Compilation at $(date) ==="
 
-# Safety Watchdog: auto-terminate after 4 hours
-shutdown -h +240 &
+# Safety Watchdog: hard timeout at 3.5 hours
+shutdown -h +210 &
 
-export DEBIAN_FRONTEND=noninteractive
+# Configure Git
+git config --global user.name "eGixium Builder"
+git config --global user.email "builder@egixi.com"
+
+# Install System Dependencies
 apt-get update && apt-get install -y \
     git curl wget python3 python3-pip openjdk-17-jdk zipalign apksigner ninja-build \
-    build-essential libncurses5 lsb-release pkg-config file bsdextrautils libglib2.0-dev
+    build-essential libncurses5 lsb-release pkg-config file bsdextrautils libglib2.0-dev sudo
 
 # Install GitHub CLI
 curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
@@ -30,6 +52,7 @@ cd chromium-extend
 
 VERSION_NAME=$(python3 tools/version.py name)
 VERSION_CODE=$(python3 tools/version.py code)
+RELEASE_TAG="v${VERSION_NAME}"
 APK_NAME="eGixium-arm64-${VERSION_NAME}.apk"
 
 # 2. Setup depot_tools
@@ -37,31 +60,54 @@ git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git /work
 export PATH="/work/depot_tools:$PATH"
 export DEPOT_TOOLS_UPDATE=0
 
-# 3. Fetch Chromium Source (pinned commit 945b5115)
+# 3. Setup .gclient and Shallow Sync pinned commit (945b51156108ba94d62f235a75379772da8ced30)
 mkdir -p /work/chromium && cd /work/chromium
-fetch --nohooks android
-cd src
-git checkout 945b5115
-gclient sync -D --force --reset
+cat << 'EOF' > .gclient
+solutions = [
+  {
+    "name": "src",
+    "url": "https://chromium.googlesource.com/chromium/src.git@945b51156108ba94d62f235a75379772da8ced30",
+    "managed": False,
+    "custom_deps": {},
+    "custom_vars": {},
+  },
+]
+target_os = ["android"]
+EOF
+
+echo "=== Syncing Chromium Android Source (Shallow) ==="
+gclient sync --no-history --shallow --delete_unversioned_trees --reset -j$(nproc)
+
+cd /work/chromium/src
 
 # 4. Install build dependencies
-./build/install-build-deps.sh --android --no-prompt
+echo "=== Installing Android Build Dependencies ==="
+./build/install-build-deps.sh --android --no-prompt --no-chromeos-fonts --no-nacl || true
 
-# 5. Apply all 75 eGixium patches
-for patch in /work/chromium-extend/patches/*.patch; do
-    echo "Applying $patch..."
-    git apply --ignore-whitespace "$patch" || git apply --reject "$patch" || true
+# Run hooks to populate sysroots, toolchains, Java JDK, and Android SDK/NDK
+gclient runhooks
+
+# 5. Apply all 75 eGixium patches sequentially
+echo "=== Applying 75 eGixium Custom Patches ==="
+for patch in $(ls /work/chromium-extend/patches/*.patch | sort -V); do
+    echo "Applying $(basename "$patch")..."
+    git apply --ignore-whitespace "$patch" || patch -p1 --forward < "$patch" || {
+        echo "Failed to apply $patch"
+        exit 1
+    }
 done
 
 # 6. Copy bundled assets
+echo "=== Injecting Assets & Third-Party Extensions ==="
 mkdir -p chrome/browser/resources/bare
 cp /work/chromium-extend/third_party/ublock_origin/uBlockOrigin-1.73.0.crx chrome/browser/resources/bare/ublock_origin.crx
 mkdir -p third_party/eruda
 cp /work/chromium-extend/third_party/eruda/eruda.min.js third_party/eruda/eruda.min.js
 
 # 7. Configure GN Arguments
+echo "=== Configuring GN Build Arguments ==="
 mkdir -p out/eGixium
-cat << 'GNARGS' > out/eGixium/args.gn
+cat << GNARGS > out/eGixium/args.gn
 target_os = "android"
 target_cpu = "arm64"
 is_desktop_android = true
@@ -90,17 +136,26 @@ enable_cardboard = false
 enable_openxr = false
 
 chrome_public_manifest_package = "org.egixium"
-android_override_version_code = "801000001"
-android_override_version_name = "1.0.0-alpha.1"
+android_override_version_code = "${VERSION_CODE}"
+android_override_version_name = "${VERSION_NAME}"
 GNARGS
 
 # 8. Generate build files and compile with Ninja
+echo "=== Generating GN Ninja Build Files ==="
 gn gen out/eGixium
+
+echo "=== Compiling chrome_public_apk with Autoninja ==="
 autoninja -C out/eGixium chrome_public_apk
 
 # 9. Sign and align APK
 UNSIGNED_APK="out/eGixium/apks/ChromePublic.apk"
+if [ ! -f "$UNSIGNED_APK" ]; then
+    # Search for alternative apk output path if named differently
+    UNSIGNED_APK=$(find out/eGixium/apks -name "*.apk" | head -n 1)
+fi
+
 if [ -f "$UNSIGNED_APK" ]; then
+    echo "=== Signing and Aligning Final APK ($UNSIGNED_APK) ==="
     keytool -genkey -v -keystore /work/egixium.keystore -alias egixium -keyalg RSA -keysize 2048 -validity 10000 \
         -dname "CN=eGixium, OU=Browser, O=Egixi, L=San Francisco, S=CA, C=US" -storepass egixium123 -keypass egixium123
 
@@ -108,10 +163,10 @@ if [ -f "$UNSIGNED_APK" ]; then
     apksigner sign --ks /work/egixium.keystore --ks-pass pass:egixium123 --out "/work/${APK_NAME}" "/work/aligned.apk"
 
     # 10. Upload finalized APK to GitHub Release
-    gh release upload "${VERSION_NAME}" "/work/${APK_NAME}" --repo NeoTurcios/chromium-extend --clobber
+    echo "=== Uploading ${APK_NAME} to GitHub Release ${RELEASE_TAG} ==="
+    gh release upload "${RELEASE_TAG}" "/work/${APK_NAME}" --repo NeoTurcios/chromium-extend --clobber
     echo "=== SUCCESS! ${APK_NAME} uploaded to GitHub Releases ==="
+else
+    echo "ERROR: Could not find generated APK in out/eGixium/apks/"
+    exit 1
 fi
-
-# 11. Auto-terminate instance
-echo "=== Full compilation finished at $(date), terminating instance now ==="
-shutdown -h now

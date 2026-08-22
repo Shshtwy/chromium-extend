@@ -9,8 +9,8 @@ GH_TOKEN=$(gh auth token)
 USER_DATA=$(cat /root/chromium-extend/tools/build-full-ec2.sh | sed "s|__GH_TOKEN__|${GH_TOKEN}|g")
 ENCODED_USER_DATA=$(echo "$USER_DATA" | base64 -w 0)
 
-# 200 GB GP3 EBS storage for Chromium build tree
-BLOCK_DEVICE='[{"DeviceName":"/dev/sda1","Ebs":{"VolumeSize":200,"VolumeType":"gp3","DeleteOnTermination":true}}]'
+# 220 GB GP3 EBS high-throughput storage for Chromium build tree
+BLOCK_DEVICE='[{"DeviceName":"/dev/sda1","Ebs":{"VolumeSize":220,"VolumeType":"gp3","Iops":4000,"Throughput":250,"DeleteOnTermination":true}}]'
 SPOT_OPTIONS='{"MarketType":"spot","SpotOptions":{"SpotInstanceType":"one-time","InstanceInterruptionBehavior":"terminate"}}'
 
 for itype in "c6a.8xlarge" "m6a.8xlarge" "c5a.8xlarge" "m5a.8xlarge" "c6i.8xlarge"; do
